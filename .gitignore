@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Images
+public/*.png
+public/*.svg
+src/assets/*.png
+src/assets/*.svg
