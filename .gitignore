@@ -23,8 +23,3 @@ dist-ssr
 *.sln
 *.sw?
 
-# Images
-public/*.png
-public/*.svg
-src/assets/*.png
-src/assets/*.svg
