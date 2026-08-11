@@ -13,6 +13,8 @@ const panelVariants = {
 const statCards = [
   {
     icon: 'down',
+    tone: 'alone',
+    tag: 'Learning alone',
     text: (
       <>
         <strong>87%</strong> of solo
@@ -25,6 +27,8 @@ const statCards = [
   },
   {
     icon: 'pie',
+    tone: 'alone',
+    tag: 'Learning alone',
     text: (
       <>
         Only <strong>12%</strong>
@@ -37,6 +41,8 @@ const statCards = [
   },
   {
     icon: 'growth',
+    tone: 'team',
+    tag: 'Learning with team',
     text: (
       <>
         Accountability
@@ -49,6 +55,8 @@ const statCards = [
   },
   {
     icon: 'rocket',
+    tone: 'team',
+    tag: 'Learning with team',
     text: (
       <>
         Builders in
@@ -177,7 +185,7 @@ export default function ProblemSolutionSection() {
       <div className="stat-grid" aria-label="Learning alone compared with building in pods">
         {statCards.map((card, index) => (
           <motion.div
-            className="stat-card"
+            className={`stat-card stat-card-${card.tone}`}
             key={card.icon}
             initial={{ opacity: 0, y: 32, rotate: index % 2 ? 0.8 : -0.8 }}
             whileInView={{ opacity: 1, y: 0, rotate: 0 }}
@@ -185,6 +193,7 @@ export default function ProblemSolutionSection() {
             transition={{ duration: 0.55, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
             whileHover={{ y: -8, scale: 1.03 }}
           >
+            <span className="stat-tag">{card.tag}</span>
             <motion.div
               className={`stat-icon stat-icon-${card.icon}`}
               animate={{ y: [0, -5, 0], rotate: [0, index % 2 ? 2 : -2, 0] }}
