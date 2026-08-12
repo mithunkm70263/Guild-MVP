@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 const featureCards = [
   {
@@ -117,6 +118,8 @@ export default function ApplicationForm() {
     whyJoin: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const completion = useMemo(() => {
     const required = [
@@ -133,9 +136,45 @@ export default function ApplicationForm() {
     return Math.round((required.filter(Boolean).length / required.length) * 100);
   }, [formData]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    setSubmitted(true);
+    setIsSubmitting(true);
+    setErrorMessage('');
+
+    if (!isSupabaseConfigured()) {
+      setErrorMessage(
+        'Supabase credentials missing! Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env.local file.',
+      );
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from('applications').insert([
+        {
+          full_name: formData.fullName,
+          email: formData.email,
+          country: formData.country,
+          timezone: formData.timezone,
+          skill: formData.skill,
+          current_level: formData.currentLevel,
+          weekly_time: formData.weeklyTime,
+          commitment_level: formData.commitmentLevel,
+          why_join: formData.whyJoin,
+        },
+      ]);
+
+      if (error) {
+        throw error;
+      }
+
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Error submitting application to Supabase:', err);
+      setErrorMessage(err.message || 'Failed to submit application. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (event) => {
@@ -421,15 +460,27 @@ export default function ApplicationForm() {
                   />
                 </motion.label>
 
+                {errorMessage && (
+                  <div className="apply-error" role="alert">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 8v4M12 16h.01" />
+                    </svg>
+                    <span>{errorMessage}</span>
+                  </div>
+                )}
+
                 <motion.button
                   type="submit"
                   className="apply-submit"
+                  disabled={isSubmitting}
                   custom={9}
                   variants={fieldVariants}
-                  whileHover={{ y: -5, scale: 1.018 }}
-                  whileTap={{ scale: 0.97 }}
+                  whileHover={isSubmitting ? {} : { y: -5, scale: 1.018 }}
+                  whileTap={isSubmitting ? {} : { scale: 0.97 }}
+                  style={{ opacity: isSubmitting ? 0.75 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
                 >
-                  Submit application
+                  {isSubmitting ? 'Submitting...' : 'Submit application'}
                   <span>
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M5 12h14" />

@@ -1807,6 +1807,33 @@ a {
   transform: translate(-2px, -2px);
 }
 
+.apply-error {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  grid-column: 1 / -1;
+  padding: 14px 18px;
+  border: 2px solid var(--primary-black);
+  border-radius: 12px;
+  background: #fff0f0;
+  color: #c53030;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 4px 4px 0 #c53030;
+}
+
+.apply-error svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .apply-submit {
   position: relative;
   display: inline-flex;
