@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 export default function Header() {
   return (
@@ -36,14 +37,18 @@ export default function Header() {
         >
           FAQ
         </motion.a>
-        <motion.a
-          href="#login"
-          className="btn-login"
+        <motion.div
           whileHover={{ y: -2, scale: 1.03, rotate: -0.5 }}
           whileTap={{ scale: 0.96 }}
+          style={{ display: 'inline-flex' }}
         >
-          LOG IN
-        </motion.a>
+          <Link
+            to="/login"
+            className="btn-login"
+          >
+            LOG IN
+          </Link>
+        </motion.div>
         <motion.a
           href="/apply"
           className="btn-join"
