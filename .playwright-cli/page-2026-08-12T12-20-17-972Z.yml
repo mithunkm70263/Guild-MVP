@@ -1,0 +1,28 @@
+- generic [ref=f4e4]:
+  - link "Guild" [ref=f4e6] [cursor=pointer]:
+    - /url: /
+  - img "Kairos avatar" [ref=f4e14]
+  - generic [ref=f4e15]:
+    - heading "I'll connect you with the finest people in the world" [level=1] [ref=f4e16]
+    - paragraph [ref=f4e17]: Welcome back to the Guild command room.
+  - generic [ref=f4e18]:
+    - generic [ref=f4e19]: Member access
+    - generic [ref=f4e20]:
+      - heading "Enter the Guild" [level=2] [ref=f4e21]
+      - paragraph [ref=f4e22]: Kairos is standing by.
+    - generic [ref=f4e23]:
+      - generic [ref=f4e24]:
+        - generic [ref=f4e25]: Email
+        - textbox "Email" [ref=f4e31]:
+          - /placeholder: Enter your email
+      - generic [ref=f4e32]:
+        - generic [ref=f4e33]: Password
+        - generic [ref=f4e34]:
+          - textbox "Password" [ref=f4e39]:
+            - /placeholder: Enter your password
+          - button "Show password" [ref=f4e40] [cursor=pointer]
+      - button "Login" [ref=f4e46] [cursor=pointer]
+      - generic [ref=f4e47]: OR
+      - button "Continue with Google" [ref=f4e49] [cursor=pointer]
+      - link "Forgot password?" [ref=f4e56] [cursor=pointer]:
+        - /url: "#"

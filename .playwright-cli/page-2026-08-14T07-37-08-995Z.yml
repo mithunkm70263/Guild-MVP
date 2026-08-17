@@ -1,0 +1,116 @@
+- main [ref=e3]:
+  - complementary [ref=e4]:
+    - link "Guild home" [ref=e5] [cursor=pointer]:
+      - /url: /
+      - img "Guild" [ref=e6]
+      - generic [ref=e7]: Guild
+    - generic [ref=e8]:
+      - generic [ref=e9]:
+        - img "Mithun profile" [ref=e11]
+        - generic [ref=e13]:
+          - paragraph [ref=e14]: Founder track
+          - heading "Mithun" [level=2] [ref=e15]
+          - generic [ref=e16]: Live with pod
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - generic [ref=e20]: Current rank
+          - strong [ref=e21]: Kairos Builder
+        - generic [ref=e22]: LVL 8
+      - generic "Rank progress" [ref=e23]
+      - generic [ref=e24]:
+        - generic [ref=e25]: AI
+        - generic [ref=e26]: Frontend
+        - generic [ref=e27]: Shipping
+      - generic [ref=e28]:
+        - generic [ref=e29]:
+          - strong [ref=e30]: "12"
+          - generic [ref=e31]: Sprints
+        - generic [ref=e32]:
+          - strong [ref=e33]: "38"
+          - generic [ref=e34]: Tasks
+        - generic [ref=e35]:
+          - strong [ref=e36]: "4"
+          - generic [ref=e37]: Allies
+      - generic [ref=e38]:
+        - button "Focus" [ref=e39] [cursor=pointer]
+        - button "Notes" [ref=e40] [cursor=pointer]
+    - navigation "Dashboard navigation" [ref=e41]:
+      - button "01 Command" [ref=e42] [cursor=pointer]:
+        - generic [ref=e43]: "01"
+        - text: Command
+      - button "02 Pod Room" [ref=e44] [cursor=pointer]:
+        - generic [ref=e45]: "02"
+        - text: Pod Room
+      - button "03 Missions" [ref=e46] [cursor=pointer]:
+        - generic [ref=e47]: "03"
+        - text: Missions
+      - button "04 Signals" [ref=e48] [cursor=pointer]:
+        - generic [ref=e49]: "04"
+        - text: Signals
+    - generic [ref=e50]:
+      - text: Next ritual
+      - strong [ref=e51]: Pod sync at 7:30
+      - paragraph [ref=e52]: Five minutes to share progress, blockers, and the one move that matters tomorrow.
+  - region [ref=e53]:
+    - generic [ref=e54]:
+      - generic [ref=e55]:
+        - generic [ref=e56]: Guild command room
+        - heading "Your momentum is live." [level=1] [ref=e57]
+      - generic "Current local time" [ref=e58]:
+        - text: 13:07
+        - paragraph [ref=e59]: Fri 14 Aug
+    - generic [ref=e60]:
+      - generic [ref=e61]:
+        - img "Kairos assistant" [ref=e63]
+        - generic [ref=e64]: Kairos online
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - generic [ref=e68]:
+            - text: Kairos feed
+            - heading "Signal over noise" [level=2] [ref=e69]
+          - generic [ref=e70]: Live
+        - generic [ref=e71]:
+          - paragraph [ref=e72]: Welcome back. Your pod is active, your next sprint is staged, and I found two clean openings for momentum today.
+          - paragraph [ref=e73]: Show me the highest leverage move first.
+          - paragraph [ref=e74]: Ship the auth polish task before standup. It unlocks review from Anika and keeps the Friday demo clear.
+        - generic [ref=e75]:
+          - textbox "Message Kairos" [ref=e76]:
+            - /placeholder: Send Kairos a mission update...
+          - button "Send message" [ref=e77] [cursor=pointer]:
+            - generic [ref=e81]: Send
+      - region "Mission summary" [ref=e82]:
+        - article [ref=e83]:
+          - generic [ref=e84]: Today
+          - strong [ref=e85]: Ship auth polish
+          - paragraph [ref=e86]: 42 min focus block
+        - article [ref=e87]:
+          - generic [ref=e88]: Pod pulse
+          - strong [ref=e89]: 4/5 checked in
+          - paragraph [ref=e90]: Aarav is reviewing your notes
+        - article [ref=e91]:
+          - generic [ref=e92]: Momentum
+          - strong [ref=e93]: 86% signal
+          - paragraph [ref=e94]: Three-day streak protected
+    - generic [ref=e95]:
+      - generic [ref=e96]:
+        - generic [ref=e97]:
+          - generic [ref=e98]: Active pod
+          - heading "Builders in your orbit" [level=2] [ref=e99]
+        - button "Invite" [ref=e100] [cursor=pointer]
+      - generic [ref=e104]:
+        - article [ref=e105]:
+          - generic [ref=e106]:
+            - strong [ref=e107]: Anika
+            - generic [ref=e108]: Product
+        - article [ref=e111]:
+          - generic [ref=e112]:
+            - strong [ref=e113]: Dev
+            - generic [ref=e114]: Frontend
+        - article [ref=e117]:
+          - generic [ref=e118]:
+            - strong [ref=e119]: Mira
+            - generic [ref=e120]: AI
+        - article [ref=e123]:
+          - generic [ref=e124]:
+            - strong [ref=e125]: Rohan
+            - generic [ref=e126]: Systems

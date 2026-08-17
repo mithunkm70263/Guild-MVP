@@ -1,72 +1,7 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
-
-const KAIROS_MESSAGES = [
-  "I'm Kairos. Your Guild gateway is open."
-];
-
-function KairosMascot() {
-  const [msgIndex] = useState(0);
-  const [showBubble, setShowBubble] = useState(false);
-
-  useEffect(() => {
-    const initialTimer = setTimeout(() => {
-      setShowBubble(true);
-    }, 800);
-
-    return () => clearTimeout(initialTimer);
-  }, []);
-
-  return (
-    <div className="kairos-wrapper-brutal">
-      <motion.div
-        className="kairos-orbit kairos-orbit-one"
-        aria-hidden="true"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
-      />
-      <motion.div
-        className="kairos-orbit kairos-orbit-two"
-        aria-hidden="true"
-        animate={{ rotate: -360 }}
-        transition={{ duration: 24, repeat: Infinity, ease: 'linear' }}
-      />
-      <AnimatePresence>
-        {showBubble && (
-          <motion.div
-            className="kairos-speech-bubble-brutal"
-            key={msgIndex}
-            initial={{ opacity: 0, scale: 0.2, y: 30, rotate: -10 }}
-            animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
-            exit={{ opacity: 0, scale: 0.6, y: -10 }}
-            transition={{ type: 'spring', stiffness: 500, damping: 20, mass: 1 }}
-          >
-            <span>{KAIROS_MESSAGES[msgIndex]}</span>
-            <div className="bubble-tail-brutal" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <motion.div
-        className="kairos-stage-brutal"
-        initial={{ opacity: 0, y: 60, scale: 0.8 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, type: 'spring', bounce: 0.5 }}
-      >
-        <img
-          src="/kairos.png"
-          alt="Kairos avatar"
-          className="kairos-avatar-brutal"
-        />
-        <span className="kairos-face-glow" aria-hidden="true" />
-        <span className="kairos-blink kairos-blink-left" aria-hidden="true" />
-        <span className="kairos-blink kairos-blink-right" aria-hidden="true" />
-        <span className="kairos-scanline" aria-hidden="true" />
-      </motion.div>
-    </div>
-  );
-}
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
+import KairosMascot from './KairosMascot.jsx';
 
 /* ── Icons ── */
 function MailIcon() {
@@ -127,10 +62,12 @@ function GuildLoginMark() {
 
 /* ── Main Login Page ── */
 export default function LoginPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
+  const enterConnect = () => navigate('/connect');
 
   return (
     <div className="login-page-brutal">
@@ -176,7 +113,13 @@ export default function LoginPage() {
             <h2>Enter the Guild</h2>
             <p>Kairos is standing by.</p>
           </div>
-          <form onSubmit={(e) => e.preventDefault()} className="login-form-brutal">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              enterConnect();
+            }}
+            className="login-form-brutal"
+          >
             {/* Email */}
             <div className={`login-field-brutal ${focusedField === 'email' ? 'focused' : ''}`}>
               <label htmlFor="email">Email</label>
@@ -240,6 +183,7 @@ export default function LoginPage() {
             <motion.button
               type="button"
               className="login-google-btn-brutal"
+              onClick={enterConnect}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
