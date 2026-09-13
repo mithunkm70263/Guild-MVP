@@ -106,7 +106,9 @@ export default function ConnectPage() {
         <KairosMascot
           messages={KAIROS_MESSAGES}
           wrapperClassName="connect-kairos-wrapper"
+          tone="dark"
           cycleMessages
+          cyclePoses
           bubbleDelay={650}
         />
       </motion.div>

@@ -1,87 +1,28 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Avatar from './Avatar.jsx';
-import { NAV_ITEMS, PANEL_EASE, USER } from './data.js';
-import { NavIcon } from './icons.jsx';
-
+import { NAV_ITEMS, USER } from './data.js';
+const iconPaths = { command: <><path d="M4 5.5h16v13H4z" /><path d="M8 10h8M8 14h5" /></>, kairos: <><path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3Z" /><path d="m18.5 16 .8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2Z" /></>, chat: <><path d="M4 5h16v11H9l-5 4v-4.5z" /><path d="M8 10h8M8 13h5" /></>, pod: <><circle cx="12" cy="7" r="2.5" /><circle cx="6.5" cy="16.5" r="2" /><circle cx="17.5" cy="16.5" r="2" /><path d="m10.5 9-3 5M13.5 9l3 5M8.5 17h7" /></>, missions: <><rect x="5" y="4" width="14" height="16" rx="1.5" /><path d="m8 10 1.5 1.5L12 8.5M8 15l1.5 1.5L12 13.5M14 10h2M14 15h2" /></>, profile: <><circle cx="12" cy="8" r="3" /><path d="M5.5 20c.7-3.3 3.1-5 6.5-5s5.8 1.7 6.5 5" /></> };
 export default function DashboardSidebar({ activeNav, onNavChange }) {
-  return (
-    <motion.aside
-      className="dash-sidebar"
-      initial={{ opacity: 0, x: -36 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.65, ease: PANEL_EASE }}
-    >
-      <Link to="/" className="dash-brand" aria-label="Guild home">
-        <img
-          src="/guild-logo.png"
-          alt=""
-          className="dash-guild-logo"
-          width="44"
-          height="44"
-        />
-        <span>Guild</span>
-      </Link>
-
-      <motion.button
-        type="button"
-        className="dash-profile-mini"
-        onClick={() => onNavChange('profile')}
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, delay: 0.08, ease: PANEL_EASE }}
-        whileHover={{ scale: 1.02, y: -2 }}
-        whileTap={{ scale: 0.98 }}
-        aria-label="Open profile"
-      >
-        <Avatar name={USER.name} size={56} online />
-        <div>
-          <p>{USER.track}</p>
-          <h2>{USER.name}</h2>
-          <span className="dash-status-pill">{USER.status}</span>
-        </div>
-        <div className="dash-profile-mini-rank">
-          <small>{USER.rank}</small>
-          <b>L{USER.level}</b>
-        </div>
-      </motion.button>
-
-      <nav className="dash-nav" aria-label="Dashboard navigation">
-        {NAV_ITEMS.map((item, index) => (
-          <motion.button
-            type="button"
-            key={item.id}
-            className={activeNav === item.id ? 'active' : ''}
-            onClick={() => onNavChange(item.id)}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.14 + index * 0.05, ease: PANEL_EASE }}
-            whileHover={{ x: 8 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            <NavIcon type={item.icon} />
-            <span>{item.label}</span>
-            {activeNav === item.id && (
-              <motion.span
-                className="dash-nav-indicator"
-                layoutId="dash-nav-indicator"
-                transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-              />
-            )}
-          </motion.button>
-        ))}
-      </nav>
-
-      <motion.section
-        className="dash-sidebar-card"
-        initial={{ opacity: 0, y: 22 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, delay: 0.42, ease: PANEL_EASE }}
-      >
-        <span>Next ritual</span>
-        <strong>Pod sync at 7:30 PM</strong>
-        <p>Five minutes to share progress, blockers, and the one move that matters tomorrow.</p>
-      </motion.section>
-    </motion.aside>
-  );
+  return <aside className="dash-sidebar">
+    <Link to="/" className="dash-brand" aria-label="Guild home"><span><img src="/guild-logo.png" alt="" /></span><strong>guild</strong><em>workspace</em></Link>
+    <button className="dash-user-card" onClick={() => onNavChange('profile')} type="button">
+      <Avatar initials={USER.initials} color="clay" size="lg" status="focus" />
+      <span><small>Today’s maker</small><strong>{USER.name.split(' ')[0]}</strong><em>{USER.track}</em></span>
+      <b title={`${USER.streak} day streak`}>✦ {USER.streak}</b>
+    </button>
+    <p className="dash-sidebar-label">Your space</p>
+    <nav className="dash-nav" aria-label="Dashboard navigation">
+      {NAV_ITEMS.map((item) => {
+        const active = activeNav === item.id;
+        return <motion.button key={item.id} type="button" onClick={() => onNavChange(item.id)} className={active ? 'active' : ''} whileTap={{ scale: 0.975 }} whileHover={{ x: 2 }}>
+          {active && <motion.i className="dash-nav-active-surface" layoutId="active-dashboard-nav" transition={{ type: 'spring', stiffness: 460, damping: 34 }} />}
+          <svg viewBox="0 0 24 24" aria-hidden="true">{iconPaths[item.icon]}</svg><span>{item.label}</span>
+          {item.count ? <b className="dash-nav-count">{item.count}</b> : <em>{item.hint}</em>}
+          {item.signal && <i className="dash-kairos-nav-dot" />}
+        </motion.button>;
+      })}
+    </nav>
+    <section className="dash-side-ritual"><span><i /> Next pod session</span><strong>Today, 6:30 PM</strong><p>Bring one small thing you moved.</p><div><span>03h</span><i /><span>18m</span></div></section>
+  </aside>;
 }

@@ -50,7 +50,7 @@ export default function Header() {
           </Link>
         </motion.div>
         <motion.a
-          href="/apply"
+          href="/get-started"
           className="btn-join"
           whileHover={{ y: -2, scale: 1.03, rotate: 0.5 }}
           whileTap={{ scale: 0.96 }}

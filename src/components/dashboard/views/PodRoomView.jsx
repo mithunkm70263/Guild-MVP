@@ -1,110 +1,28 @@
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
+import { useState } from 'react';
 import Avatar from '../Avatar.jsx';
 import { POD_MEMBERS } from '../data.js';
-import { PlusIcon, SparkIcon } from '../icons.jsx';
 
-const stagger = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.07, delayChildren: 0.1 } },
-};
+const nodePositions = [{ left: '17%', top: '36%' }, { left: '65%', top: '12%' }, { left: '65%', top: '61%' }];
+const item = { initial: { opacity: 0, y: 14 }, animate: { opacity: 1, y: 0 } };
 
-const item = {
-  hidden: { opacity: 0, y: 24, scale: 0.94 },
-  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
-};
+function Arrow() { return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M14 7l5 5-5 5" /></svg>; }
 
-export default function PodRoomView() {
-  return (
-    <div className="dash-view dash-pod">
-      <motion.div variants={stagger} initial="hidden" animate="show" className="dash-pod-layout">
-        <motion.section className="dash-panel dash-pod-hero" variants={item}>
-          <span className="dash-kicker">Active pod</span>
-          <h2>Builders in your orbit</h2>
-          <p>Five minds. One sprint rhythm. Real accountability in every check-in.</p>
-
-          <div className="dash-pod-orbit" aria-label="Pod members">
-            <motion.div
-              className="dash-pod-orbit-ring"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 48, repeat: Infinity, ease: 'linear' }}
-              aria-hidden="true"
-            />
-            {POD_MEMBERS.map((member, index) => {
-              const angle = (index / POD_MEMBERS.length) * Math.PI * 2 - Math.PI / 2;
-              const x = Math.cos(angle) * 42;
-              const y = Math.sin(angle) * 42;
-
-              return (
-                <motion.div
-                  key={member.name}
-                  className="dash-pod-orbit-node"
-                  style={{ left: `calc(50% + ${x}%)`, top: `calc(50% + ${y}%)` }}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2 + index * 0.08, type: 'spring', stiffness: 320 }}
-                  whileHover={{ scale: 1.12, zIndex: 2 }}
-                >
-                  <Avatar name={member.name} size={64} online={member.online} />
-                  <strong>{member.name}</strong>
-                  <span>{member.skill}</span>
-                </motion.div>
-              );
-            })}
-            <div className="dash-pod-orbit-core">
-              <span>Pod 07</span>
-              <strong>Live</strong>
-            </div>
-          </div>
-        </motion.section>
-
-        <motion.section className="dash-pod-side" variants={item}>
-          <div className="dash-panel dash-pod-sync">
-            <span className="dash-kicker">Next ritual</span>
-            <h3>Pod sync at 7:30 PM</h3>
-            <p>Five minutes to share progress, blockers, and the one move that matters tomorrow.</p>
-            <motion.div
-              className="dash-sync-countdown"
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 1.2, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <span style={{ width: '68%' }} />
-            </motion.div>
-            <small>2h 39m until sync</small>
-          </div>
-
-          <div className="dash-panel dash-pod-roster">
-            <div className="dash-panel-head compact">
-              <h3>Member pulse</h3>
-              <motion.button type="button" whileHover={{ y: -2 }} whileTap={{ scale: 0.96 }}>
-                <PlusIcon />
-                <span>Invite</span>
-              </motion.button>
-            </div>
-
-            <div className="dash-pod-list">
-              {POD_MEMBERS.map((member, index) => (
-                <motion.article
-                  key={member.name}
-                  className="dash-pod-member"
-                  variants={item}
-                  whileHover={{ x: 6, backgroundColor: 'rgba(255,255,255,0.08)' }}
-                >
-                  <Avatar name={member.name} size={48} online={member.online} />
-                  <div>
-                    <strong>{member.name}</strong>
-                    <span>{member.skill}</span>
-                  </div>
-                  <div className="dash-pod-member-meta">
-                    <em>{member.status}</em>
-                    <SparkIcon />
-                  </div>
-                </motion.article>
-              ))}
-            </div>
-          </div>
-        </motion.section>
-      </motion.div>
-    </div>
-  );
+export default function PodRoomView({ onNavigate }) {
+  const [joined, setJoined] = useState(false);
+  const reduceMotion = useReducedMotion();
+  return <motion.div className="pod-room-stage" initial="initial" animate="animate">
+    <motion.section className="pod-room-hero" variants={item} transition={{ duration: .45 }}>
+      <div className="pod-room-copy"><span className="dash-kicker">Pod 04 / small by design</span><h2>Three people,<br /><em>making room</em><br />for the work.</h2><p>This is not a crowd. It’s a calm, small place where progress gets witnessed before it disappears into the week.</p><div className="pod-room-actions"><button type="button" onClick={() => onNavigate('chat')}>Write to the pod <Arrow /></button><button type="button" className={joined ? 'is-joined' : ''} onClick={() => setJoined((current) => !current)}>{joined ? 'You’re in the room' : 'Join the room'} <i /></button></div></div>
+      <div className="pod-orbit" aria-label="Pod 04 members and their current status">
+        <svg className="pod-orbit-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M24 44 70 22M24 47l46 39M72 26v52" /></svg>
+        <motion.div className="pod-orbit-core" animate={reduceMotion ? undefined : { scale: [1, 1.035, 1] }} transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}><img src="/guild-logo.png" alt="" /><span>Pod 04</span><i /></motion.div>
+        {POD_MEMBERS.map((member, index) => <motion.article className="pod-orbit-member" key={member.id} style={nodePositions[index]} initial={{ opacity: 0, scale: .72 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: .18 + index * .09, type: 'spring', stiffness: 280, damping: 22 }} whileHover={reduceMotion ? undefined : { scale: 1.06 }}><Avatar initials={member.initials} color={member.color} size="lg" status={member.status} /><div><strong>{member.name === 'Mithun' ? 'You' : member.name.split(' ')[0]}</strong><small>{member.status === 'focus' ? 'in focus' : member.status === 'away' ? 'away' : 'checked in'}</small></div></motion.article>)}
+      </div>
+    </motion.section>
+    <motion.aside className="pod-room-side" variants={item} transition={{ delay: .08, duration: .45 }}>
+      <section className="pod-session-card"><div className="pod-session-clock"><svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="24" /><path d="M30 16v15l9 5" /></svg></div><span className="dash-kicker">Next shared session</span><h3>Today · 6:30 PM</h3><p>In <strong>3 hours, 18 minutes.</strong> Bring the one thing you moved.</p><div><i /><span>Mithun and Anika are coming</span></div></section>
+      <section className="pod-pulse-card"><header><span className="dash-kicker">The room right now</span><b><i /> 2 present</b></header>{POD_MEMBERS.map((member) => <motion.article key={member.id} whileHover={reduceMotion ? undefined : { x: 3 }}><Avatar initials={member.initials} color={member.color} size="sm" status={member.status} /><div><strong>{member.name === 'Mithun' ? 'Mithun (you)' : member.name}</strong><span>{member.detail}</span></div><em>{member.status === 'focus' ? 'Now' : member.status === 'away' ? 'Soon' : 'Here'}</em></motion.article>)}</section>
+    </motion.aside>
+  </motion.div>;
 }

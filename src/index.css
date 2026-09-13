@@ -3609,9 +3609,6 @@ a {
   height: 100%;
   object-fit: contain;
   object-position: center;
-  filter:
-    drop-shadow(0 0 18px rgba(119, 58, 255, 0.66))
-    drop-shadow(0 0 34px rgba(0, 226, 255, 0.28));
   will-change: transform;
 }
 
@@ -4341,9 +4338,7 @@ a {
   position: relative;
   z-index: 2;
   width: min(54vw, 480px);
-  filter:
-    drop-shadow(0 0 42px rgba(0, 229, 255, 0.55))
-    drop-shadow(0 36px 40px rgba(0, 0, 0, 0.52));
+  filter: drop-shadow(0 24px 28px rgba(0, 0, 0, 0.45));
 }
 
 .connect-kairos-wrapper {
@@ -4352,6 +4347,10 @@ a {
   min-height: 320px;
   display: grid;
   place-items: center;
+}
+
+.connect-kairos-wrapper .kairos-spark {
+  display: none;
 }
 
 .connect-kairos-wrapper .kairos-stage-brutal {
