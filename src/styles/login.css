@@ -363,6 +363,8 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  row-gap: 6px;
+  flex-wrap: wrap;
   padding: 8px 18px;
   border: 1.5px solid var(--login-border);
   border-radius: 999px;

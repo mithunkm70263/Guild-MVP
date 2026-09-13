@@ -215,6 +215,8 @@ export default function LoginPage() {
             <motion.div className="login-pod-strip" variants={fadeUp}>
               <span>✦ 3 Builders per Pod</span>
               <span className="login-strip-dot" />
+              <span>5 Learners per Pod</span>
+              <span className="login-strip-dot" />
               <span>Sunday Ship Ritual</span>
               <span className="login-strip-dot" />
               <span>Zero Excuses</span>
