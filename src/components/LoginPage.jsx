@@ -233,7 +233,6 @@ export default function LoginPage() {
             <div className="login-card-brutal">
               <div className="login-card-top-bar">
                 <span className="login-card-kicker">✦ MEMBER ACCESS</span>
-                <span className="login-card-lock-badge">🔒 256-Bit Pass</span>
               </div>
 
               <div className="login-card-title-wrap">
