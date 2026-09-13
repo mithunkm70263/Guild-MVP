@@ -1,6 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import '../styles/ai-app-apply.css';
 
 const STORAGE_KEY = 'guild-ai-app-application';
@@ -166,6 +167,7 @@ export default function AIAppApplicationPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const scrollToWizard = useCallback(
     (top = 120) => {
@@ -281,6 +283,7 @@ export default function AIAppApplicationPage() {
   }, [currentStep, formData]);
 
   const goNext = () => {
+    setErrorMessage('');
     if (currentStep < 5) {
       setDirection(1);
       setCurrentStep((prev) => prev + 1);
@@ -291,6 +294,7 @@ export default function AIAppApplicationPage() {
   };
 
   const goBack = () => {
+    setErrorMessage('');
     if (currentStep > 0) {
       setDirection(-1);
       setCurrentStep((prev) => prev - 1);
@@ -298,22 +302,62 @@ export default function AIAppApplicationPage() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsSubmitting(true);
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        ...formData,
-        submittedAt: new Date().toISOString(),
-      })
-    );
+    setErrorMessage('');
 
-    setTimeout(() => {
+    if (!isSupabaseConfigured()) {
+      setErrorMessage(
+        'Supabase credentials are missing. Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in Vercel and .env.local.',
+      );
       setIsSubmitting(false);
+      return;
+    }
+
+    const submittedAt = new Date().toISOString();
+
+    try {
+      const { error } = await supabase.from('ai_app_applications').insert([
+        {
+          full_name: formData.fullName,
+          email: formData.email,
+          country: formData.country,
+          timezone: formData.timezone,
+          app_description: formData.appDescription,
+          app_status: formData.appStatus,
+          why_stopped: formData.whyStopped || null,
+          launch_experience: formData.launchExperience,
+          three_month_ready: formData.threeMonthReady,
+          motivation_and_sacrifice: formData.motivationAndSacrifice,
+          weekly_hours: formData.weeklyHours,
+          live_session_windows: formData.liveSessionWindows,
+          expected_traits: formData.expectedTraits,
+          pod_expectations: formData.podExpectations || null,
+          submitted_at: submittedAt,
+        },
+      ]);
+
+      if (error) {
+        throw error;
+      }
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          ...formData,
+          submittedAt,
+        })
+      );
+
       setDirection(1);
       setCurrentStep(CONFIRMATION_STEP);
       scrollToWizard(100);
-    }, 650);
+    } catch (err) {
+      console.error('Error submitting AI App application to Supabase:', err);
+      setErrorMessage(err.message || 'Failed to submit your AI App application. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const progressPercent = useMemo(() => {
@@ -837,6 +881,12 @@ export default function AIAppApplicationPage() {
                   <button type="button" className="aa-btn-back" onClick={goBack}>
                     ← Back
                   </button>
+
+                  {errorMessage && (
+                    <p className="aa-submit-error" role="alert">
+                      {errorMessage}
+                    </p>
+                  )}
 
                   <button
                     type="button"

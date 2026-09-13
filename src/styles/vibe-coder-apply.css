@@ -647,8 +647,23 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
   padding-top: 20px;
   border-top: 2px dashed rgba(18, 18, 18, 0.12);
+}
+
+.vc-submit-error {
+  flex: 1 1 100%;
+  margin: 0;
+  padding: 10px 14px;
+  border: 2px solid rgba(229, 9, 20, 0.35);
+  border-radius: 10px;
+  background: rgba(229, 9, 20, 0.08);
+  color: #9f1239;
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.4;
 }
 
 .vc-btn-back {

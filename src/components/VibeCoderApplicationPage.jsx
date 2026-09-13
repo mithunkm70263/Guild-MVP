@@ -1,6 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import '../styles/vibe-coder-apply.css';
 
 /* Ambient Sparkles */
@@ -237,6 +238,7 @@ export default function VibeCoderApplicationPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -311,6 +313,7 @@ export default function VibeCoderApplicationPage() {
   }, [currentStep, formData]);
 
   const goNext = () => {
+    setErrorMessage('');
     if (currentStep < 4) {
       setDirection(1);
       setCurrentStep((prev) => prev + 1);
@@ -321,6 +324,7 @@ export default function VibeCoderApplicationPage() {
   };
 
   const goBack = () => {
+    setErrorMessage('');
     if (currentStep > 0) {
       setDirection(-1);
       setCurrentStep((prev) => prev - 1);
@@ -328,22 +332,62 @@ export default function VibeCoderApplicationPage() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsSubmitting(true);
-    localStorage.setItem(
-      'guild-vibecoder-application',
-      JSON.stringify({
-        ...formData,
-        submittedAt: new Date().toISOString(),
-      })
-    );
+    setErrorMessage('');
 
-    setTimeout(() => {
+    if (!isSupabaseConfigured()) {
+      setErrorMessage(
+        'Supabase credentials are missing. Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in Vercel and .env.local.',
+      );
       setIsSubmitting(false);
+      return;
+    }
+
+    const submittedAt = new Date().toISOString();
+
+    try {
+      const { error } = await supabase.from('vibe_coder_applications').insert([
+        {
+          full_name: formData.fullName,
+          email: formData.email,
+          country: formData.country,
+          timezone: formData.timezone,
+          handle: formData.handle || null,
+          current_project: formData.currentProject,
+          coding_style: formData.codingStyle,
+          main_goal: formData.mainGoal,
+          experience_level: formData.experienceLevel,
+          tools_used: formData.toolsUsed,
+          weekly_hours: formData.weeklyHours,
+          live_session_windows: formData.liveSessionWindows,
+          pod_energy: formData.podEnergy,
+          pod_expectations: formData.podExpectations || null,
+          submitted_at: submittedAt,
+        },
+      ]);
+
+      if (error) {
+        throw error;
+      }
+
+      localStorage.setItem(
+        'guild-vibecoder-application',
+        JSON.stringify({
+          ...formData,
+          submittedAt,
+        })
+      );
+
       setDirection(1);
       setCurrentStep(5);
       window.scrollTo({ top: 100, behavior: 'smooth' });
-    }, 650);
+    } catch (err) {
+      console.error('Error submitting Vibe Coder application to Supabase:', err);
+      setErrorMessage(err.message || 'Failed to submit your Vibe Coder application. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const progressPercent = useMemo(() => {
@@ -944,6 +988,12 @@ export default function VibeCoderApplicationPage() {
                   <button type="button" className="vc-btn-back" onClick={goBack}>
                     ← Back
                   </button>
+
+                  {errorMessage && (
+                    <p className="vc-submit-error" role="alert">
+                      {errorMessage}
+                    </p>
+                  )}
 
                   <button
                     type="button"
