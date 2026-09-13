@@ -493,10 +493,11 @@
   text-decoration: underline;
 }
 
-/* Input Wrapper — scoped under .login-page to override legacy index.css absolute icon rules */
-.login-page .login-input-wrapper-brutal {
+/* Input fields — unique class names avoid legacy index.css absolute icon rules */
+.login-page .login-page-input-wrap {
   position: relative;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: stretch;
   height: 50px;
   min-height: 50px;
@@ -508,40 +509,34 @@
   overflow: hidden;
 }
 
-.login-page .login-field-brutal.is-focused .login-input-wrapper-brutal {
+.login-page .login-field-brutal.is-focused .login-page-input-wrap {
   border-color: var(--login-border);
   background: #fffefb;
   box-shadow: 3px 3px 0 var(--login-orange);
   transform: translate(-1px, -1px);
 }
 
-.login-page .login-input-icon {
-  position: static;
-  left: auto;
+.login-page .login-page-input-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 46px;
-  min-width: 46px;
-  height: auto;
+  width: 48px;
+  min-width: 48px;
   color: #78716c;
-  flex-shrink: 0;
   pointer-events: none;
   border-right: 2px solid rgba(18, 18, 18, 0.12);
-  transition: all 160ms ease;
+  transition: color 160ms ease, border-color 160ms ease;
 }
 
-.login-page .login-field-brutal.is-focused .login-input-icon {
+.login-page .login-field-brutal.is-focused .login-page-input-icon {
   color: var(--login-orange);
   border-right-color: rgba(232, 111, 44, 0.35);
 }
 
-.login-page .login-input-wrapper-brutal input {
-  flex: 1;
+.login-page .login-page-input-field {
+  width: 100%;
   min-width: 0;
-  width: auto;
-  height: auto;
-  align-self: stretch;
+  height: 100%;
   border: none;
   outline: none;
   background: transparent;
@@ -550,23 +545,21 @@
   font-weight: 600;
   color: var(--login-ink);
   padding: 0 14px;
+  text-overflow: ellipsis;
 }
 
-.login-page .login-input-wrapper-brutal input::placeholder {
+.login-page .login-page-input-field::placeholder {
   color: #a8a29e;
   font-weight: 400;
 }
 
-.login-page .login-eye-btn {
-  position: static;
-  right: auto;
+.login-page .login-page-toggle-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 46px;
-  min-width: 46px;
-  height: auto;
-  align-self: stretch;
+  width: 48px;
+  min-width: 48px;
+  height: 100%;
   border: none;
   border-left: 2px solid rgba(18, 18, 18, 0.12);
   border-radius: 0;
@@ -574,17 +567,22 @@
   color: #78716c;
   cursor: pointer;
   flex-shrink: 0;
-  transition: all 160ms ease;
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
 }
 
-.login-page .login-field-brutal.is-focused .login-eye-btn {
+.login-page .login-field-brutal.is-focused .login-page-toggle-btn {
   color: var(--login-orange);
   border-left-color: rgba(232, 111, 44, 0.35);
 }
 
-.login-page .login-eye-btn:hover {
+.login-page .login-page-toggle-btn:hover {
   color: var(--login-ink);
   background: rgba(18, 18, 18, 0.04);
+}
+
+/* Email field: only icon + input columns */
+.login-page .login-field-brutal:first-of-type .login-page-input-wrap {
+  grid-template-columns: auto 1fr;
 }
 
 /* Submit Button */
@@ -738,6 +736,17 @@
 
   .login-card-brutal {
     padding: 24px 20px;
+  }
+
+  .login-page .login-page-input-icon,
+  .login-page .login-page-toggle-btn {
+    width: 44px;
+    min-width: 44px;
+  }
+
+  .login-page .login-page-input-field {
+    padding: 0 12px;
+    font-size: 0.9rem;
   }
 
   .login-hero-title {

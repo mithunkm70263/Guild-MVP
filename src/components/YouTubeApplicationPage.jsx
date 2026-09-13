@@ -1,6 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import '../styles/youtube-apply.css';
 
 const STORAGE_KEY = 'guild-yt-application';
@@ -184,6 +185,7 @@ export default function YouTubeApplicationPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const scrollToWizard = useCallback(
     (top = 120) => {
@@ -245,10 +247,12 @@ export default function YouTubeApplicationPage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setErrorMessage('');
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const setChoice = (field, val) => {
+    setErrorMessage('');
     setFormData((prev) => ({
       ...prev,
       [field]: prev[field] === val ? '' : val,
@@ -256,6 +260,7 @@ export default function YouTubeApplicationPage() {
   };
 
   const toggleTrait = (trait) => {
+    setErrorMessage('');
     setFormData((prev) => {
       const exists = prev.expectedTraits.includes(trait);
       const next = exists
@@ -311,22 +316,64 @@ export default function YouTubeApplicationPage() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsSubmitting(true);
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        ...formData,
-        submittedAt: new Date().toISOString(),
-      })
-    );
+    setErrorMessage('');
 
-    setTimeout(() => {
+    if (!isSupabaseConfigured()) {
+      setErrorMessage(
+        'Supabase credentials are missing. Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in Vercel and .env.local.',
+      );
       setIsSubmitting(false);
+      return;
+    }
+
+    const submittedAt = new Date().toISOString();
+
+    try {
+      const { error } = await supabase.from('youtube_creator_applications').insert([
+        {
+          full_name: formData.fullName,
+          email: formData.email,
+          country: formData.country,
+          timezone: formData.timezone,
+          niche: formData.niche,
+          channel_url: formData.channelUrl,
+          subscribers: formData.subscribers,
+          monthly_views: formData.monthlyViews,
+          videos_posted: formData.videosPosted,
+          timeline: formData.timeline,
+          upload_cadence: formData.uploadCadence,
+          motivation_and_sacrifice: formData.motivationAndSacrifice,
+          weekly_hours: formData.weeklyHours,
+          live_session_windows: formData.liveSessionWindows,
+          expected_traits: formData.expectedTraits,
+          pod_expectations: formData.podExpectations,
+          submitted_at: submittedAt,
+        },
+      ]);
+
+      if (error) {
+        throw error;
+      }
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          ...formData,
+          submittedAt,
+        })
+      );
+
       setDirection(1);
       setCurrentStep(CONFIRMATION_STEP);
       scrollToWizard(100);
-    }, 650);
+    } catch (err) {
+      console.error('Error submitting YouTube application to Supabase:', err);
+      setErrorMessage(err.message || 'Failed to submit your YouTube application. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const progressPercent = useMemo(() => {
@@ -901,6 +948,12 @@ export default function YouTubeApplicationPage() {
                   <button type="button" className="yt-btn-back" onClick={goBack}>
                     ← Back
                   </button>
+
+                  {errorMessage && (
+                    <p className="yt-submit-error" role="alert">
+                      {errorMessage}
+                    </p>
+                  )}
 
                   <button
                     type="button"

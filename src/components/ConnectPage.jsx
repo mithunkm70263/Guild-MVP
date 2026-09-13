@@ -47,8 +47,10 @@ export default function ConnectPage() {
 
   return (
     <main className="connect-page dashboard-entry" aria-labelledby="connect-title">
+      <div className="connect-paper-noise" aria-hidden="true" />
       <div className="connect-ambient connect-ambient-one" aria-hidden="true" />
       <div className="connect-ambient connect-ambient-two" aria-hidden="true" />
+      <div className="connect-ambient connect-ambient-three" aria-hidden="true" />
       <div className="connect-grid-overlay" aria-hidden="true" />
 
       <div className="connect-particles" aria-hidden="true">
@@ -106,7 +108,7 @@ export default function ConnectPage() {
         <KairosMascot
           messages={KAIROS_MESSAGES}
           wrapperClassName="connect-kairos-wrapper"
-          tone="dark"
+          tone="light"
           cycleMessages
           cyclePoses
           bubbleDelay={650}
@@ -133,12 +135,12 @@ export default function ConnectPage() {
             onClick={enterDashboard}
             whileHover={{ scale: 1.05, y: -5 }}
             whileTap={{ scale: 0.96, y: 2 }}
-            initial={{ boxShadow: '0 16px 0 rgba(0,0,0,0.34), 0 0 0 rgba(0,229,255,0)' }}
+            initial={{ boxShadow: '0 6px 0 rgba(47,90,78,0.32), 0 0 0 rgba(74,124,110,0)' }}
             animate={{
               boxShadow: [
-                '0 16px 0 rgba(0,0,0,0.34), 0 0 32px rgba(0,229,255,0.2)',
-                '0 16px 0 rgba(0,0,0,0.34), 0 0 52px rgba(0,229,255,0.42)',
-                '0 16px 0 rgba(0,0,0,0.34), 0 0 32px rgba(0,229,255,0.2)',
+                '0 6px 0 rgba(47,90,78,0.32), 0 0 28px rgba(74,124,110,0.18)',
+                '0 6px 0 rgba(47,90,78,0.32), 0 0 44px rgba(74,124,110,0.32)',
+                '0 6px 0 rgba(47,90,78,0.32), 0 0 28px rgba(74,124,110,0.18)',
               ],
             }}
             transition={{
