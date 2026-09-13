@@ -183,7 +183,7 @@ export default function LoginPage() {
             </motion.h1>
 
             <motion.p className="login-hero-desc" variants={fadeUp}>
-              Welcome back to the Guild. Your 3-person pod is waiting on the other side.
+              Welcome back to the Guild. Your 3/5 person pod is waiting on the other side.
             </motion.p>
 
             {/* Mascot Centerpiece */}
@@ -251,9 +251,10 @@ export default function LoginPage() {
                 {/* Email Field */}
                 <div className={`login-field-brutal ${focusedField === 'email' ? 'is-focused' : ''}`}>
                   <label htmlFor="email">Email Address</label>
-                  <div className="login-input-wrapper-brutal">
-                    <span className="login-input-icon"><MailIcon /></span>
+                  <div className="login-page-input-wrap">
+                    <span className="login-page-input-icon" aria-hidden="true"><MailIcon /></span>
                     <input
+                      className="login-page-input-field"
                       id="email"
                       type="email"
                       placeholder="you@guild.build"
@@ -275,9 +276,10 @@ export default function LoginPage() {
                       Forgot password?
                     </a>
                   </div>
-                  <div className="login-input-wrapper-brutal">
-                    <span className="login-input-icon"><LockIcon /></span>
+                  <div className="login-page-input-wrap">
+                    <span className="login-page-input-icon" aria-hidden="true"><LockIcon /></span>
                     <input
+                      className="login-page-input-field"
                       id="password"
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Your secret pass"
@@ -290,7 +292,7 @@ export default function LoginPage() {
                     />
                     <button
                       type="button"
-                      className="login-eye-btn"
+                      className="login-page-toggle-btn"
                       onClick={() => setShowPassword(!showPassword)}
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                       tabIndex={-1}
