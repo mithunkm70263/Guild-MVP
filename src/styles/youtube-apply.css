@@ -678,7 +678,7 @@
   justify-content: center;
 }
 
-.yt-btn-dashboard {
+.yt-btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -696,14 +696,14 @@
   transition: all 180ms ease;
 }
 
-.yt-btn-dashboard:hover {
+.yt-btn-primary:hover {
   background: var(--yt-red);
   transform: translateY(-2px);
   box-shadow: 4px 4px 0 var(--yt-black);
 }
 
-.yt-apply-page a.yt-btn-dashboard,
-.yt-apply-page a.yt-btn-dashboard:hover {
+.yt-apply-page a.yt-btn-primary,
+.yt-apply-page a.yt-btn-primary:hover {
   color: #ffffff;
 }
 

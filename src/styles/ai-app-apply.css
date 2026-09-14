@@ -666,7 +666,7 @@
   justify-content: center;
 }
 
-.aa-btn-dashboard {
+.aa-btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -684,14 +684,14 @@
   transition: all 180ms ease;
 }
 
-.aa-btn-dashboard:hover {
+.aa-btn-primary:hover {
   background: var(--aa-accent);
   transform: translateY(-2px);
   box-shadow: 4px 4px 0 var(--aa-black);
 }
 
-.aa-apply-page a.aa-btn-dashboard,
-.aa-apply-page a.aa-btn-dashboard:hover {
+.aa-apply-page a.aa-btn-primary,
+.aa-apply-page a.aa-btn-primary:hover {
   color: #ffffff;
 }
 

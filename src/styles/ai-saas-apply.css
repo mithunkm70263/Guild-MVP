@@ -677,7 +677,7 @@
   justify-content: center;
 }
 
-.as-btn-dashboard {
+.as-btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -695,14 +695,14 @@
   transition: all 180ms ease;
 }
 
-.as-btn-dashboard:hover {
+.as-btn-primary:hover {
   background: var(--as-accent);
   transform: translateY(-2px);
   box-shadow: 4px 4px 0 var(--as-black);
 }
 
-.as-apply-page a.as-btn-dashboard,
-.as-apply-page a.as-btn-dashboard:hover {
+.as-apply-page a.as-btn-primary,
+.as-apply-page a.as-btn-primary:hover {
   color: #ffffff;
 }
 

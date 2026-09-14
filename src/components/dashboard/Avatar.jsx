@@ -1,1 +1,0 @@
-export default function Avatar({ initials, color = 'clay', size = 'md', status, className = '' }) { return <span className={`dash-avatar dash-avatar--${color} dash-avatar--${size} ${className}`.trim()}>{initials}{status && <i className={`dash-presence dash-presence--${status}`} />}</span>; }

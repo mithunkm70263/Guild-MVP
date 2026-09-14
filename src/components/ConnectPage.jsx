@@ -43,7 +43,7 @@ const fadeUp = {
 export default function ConnectPage() {
   const navigate = useNavigate();
 
-  const enterDashboard = () => navigate('/dashboard');
+  const enterBuilder = () => navigate('/builder');
 
   return (
     <main className="connect-page dashboard-entry" aria-labelledby="connect-title">
@@ -132,7 +132,7 @@ export default function ConnectPage() {
           <motion.button
             type="button"
             className="connect-cta"
-            onClick={enterDashboard}
+            onClick={enterBuilder}
             whileHover={{ scale: 1.05, y: -5 }}
             whileTap={{ scale: 0.96, y: 2 }}
             initial={{ boxShadow: '0 6px 0 rgba(47,90,78,0.32), 0 0 0 rgba(74,124,110,0)' }}

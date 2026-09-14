@@ -835,7 +835,7 @@
   flex-wrap: wrap;
 }
 
-.vc-btn-dashboard {
+.vc-btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -853,14 +853,14 @@
   transition: all 180ms ease;
 }
 
-.vc-btn-dashboard:hover {
+.vc-btn-primary:hover {
   background: var(--vc-accent);
   color: #ffffff;
   transform: translateY(-2px);
   box-shadow: 5px 5px 0 var(--vc-ink);
 }
 
-.vc-apply-page a.vc-btn-dashboard,
-.vc-apply-page a.vc-btn-dashboard:hover {
+.vc-apply-page a.vc-btn-primary,
+.vc-apply-page a.vc-btn-primary:hover {
   color: #ffffff;
 }
