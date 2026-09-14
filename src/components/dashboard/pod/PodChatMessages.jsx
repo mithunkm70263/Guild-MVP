@@ -65,11 +65,23 @@ function MessageBubble({ message, reduceMotion }) {
 export default function PodChatMessages({ messages, isTyping }) {
   const reduceMotion = useReducedMotion();
   const scrollRef = useRef(null);
-  const bottomRef = useRef(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
-  }, [messages.length, isTyping, reduceMotion]);
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const scrollToBottom = () => {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: reduceMotion ? 'auto' : 'smooth',
+      });
+    };
+
+    scrollToBottom();
+    // Re-run after layout animations settle so new messages stay in view.
+    const frame = window.requestAnimationFrame(scrollToBottom);
+    return () => window.cancelAnimationFrame(frame);
+  }, [messages, isTyping, reduceMotion]);
 
   return (
     <div className="pod-chat-messages-wrap" ref={scrollRef}>
@@ -113,7 +125,7 @@ export default function PodChatMessages({ messages, isTyping }) {
           </motion.div>
         )}
 
-        <div ref={bottomRef} className="pod-chat-scroll-anchor" aria-hidden="true" />
+        <div className="pod-chat-scroll-anchor" aria-hidden="true" />
       </motion.div>
     </div>
   );
