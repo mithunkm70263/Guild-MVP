@@ -2,7 +2,6 @@ import { useCallback, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { getDailyTasks, saveDailyTasks } from '../../../lib/homeData.js';
 import HomeCard from './HomeCard.jsx';
-import { listItem, staggerContainer } from './motionVariants.js';
 
 function TaskCheckbox({ checked, onChange, label }) {
   const reduceMotion = useReducedMotion();
@@ -67,29 +66,21 @@ export default function TodaysFocus() {
           <motion.div
             key="empty"
             className="home-empty-state home-empty-state--success"
-            initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.96 }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
           >
             <span className="home-empty-icon" aria-hidden="true">✦</span>
             <p className="home-empty-title">All caught up</p>
             <p className="home-empty-copy">Kairos will assign more tomorrow. Rest or get ahead on your weekly goals.</p>
           </motion.div>
         ) : (
-          <motion.ul
-            key="tasks"
-            className="home-task-list"
-            variants={staggerContainer}
-            initial={reduceMotion ? false : 'hidden'}
-            animate="visible"
-          >
+          <ul key="tasks" className="home-task-list">
             {tasks.map((task) => (
-              <motion.li
+              <li
                 key={task.id}
                 className={`home-task-item${task.completed ? ' is-completed' : ''}`}
-                variants={listItem}
-                layout={!reduceMotion}
               >
                 <TaskCheckbox
                   checked={task.completed}
@@ -102,9 +93,9 @@ export default function TodaysFocus() {
                     <span className="home-task-desc">{task.description}</span>
                   )}
                 </div>
-              </motion.li>
+              </li>
             ))}
-          </motion.ul>
+          </ul>
         )}
       </AnimatePresence>
     </HomeCard>

@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion';
-import { cardHover, fadeUp } from './motionVariants.js';
+import { cardHover } from './motionVariants.js';
 
 export default function HomeCard({
   children,
@@ -14,7 +14,7 @@ export default function HomeCard({
   return (
     <motion.article
       className={`home-card${variantClass}${className ? ` ${className}` : ''}`}
-      variants={hoverable && !reduceMotion ? { ...fadeUp, ...cardHover } : fadeUp}
+      variants={hoverable && !reduceMotion ? cardHover : undefined}
       initial={reduceMotion || !hoverable ? false : 'rest'}
       whileHover={reduceMotion || !hoverable ? undefined : 'hover'}
       animate={hoverable && !reduceMotion ? 'rest' : undefined}

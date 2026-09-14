@@ -1,7 +1,5 @@
-import { motion, useReducedMotion } from 'framer-motion';
 import { formatRelativeTime, getRecentActivity } from '../../../lib/homeData.js';
 import HomeCard from './HomeCard.jsx';
-import { listItem, staggerContainer } from './motionVariants.js';
 
 const TYPE_LABELS = {
   artifact: 'Artifact',
@@ -11,7 +9,6 @@ const TYPE_LABELS = {
 
 export default function RecentActivity() {
   const activities = getRecentActivity();
-  const reduceMotion = useReducedMotion();
   const featured = activities[0];
 
   return (
@@ -26,18 +23,13 @@ export default function RecentActivity() {
       </header>
 
       {featured && (
-        <motion.div
-          className="home-activity-featured"
-          initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        >
+        <div className="home-activity-featured">
           <span className="home-activity-featured-label">Latest artifact</span>
           <p className="home-activity-featured-text">
             <strong>{featured.actorName}</strong> {featured.action}
           </p>
           <span className="home-activity-featured-time">{formatRelativeTime(featured.timestamp)}</span>
-        </motion.div>
+        </div>
       )}
 
       {activities.length === 0 ? (
@@ -46,14 +38,9 @@ export default function RecentActivity() {
           <p className="home-empty-copy">Ship something today and your pod will see it here.</p>
         </div>
       ) : (
-        <motion.ul
-          className="home-activity-feed"
-          variants={staggerContainer}
-          initial={reduceMotion ? false : 'hidden'}
-          animate="visible"
-        >
+        <ul className="home-activity-feed">
           {activities.map((item) => (
-            <motion.li key={item.id} className="home-activity-item" variants={listItem}>
+            <li key={item.id} className="home-activity-item">
               <span
                 className="home-activity-avatar"
                 style={{ background: `linear-gradient(135deg, ${item.avatarColor}, ${item.avatarColor}cc)` }}
@@ -72,9 +59,9 @@ export default function RecentActivity() {
                   <span className="home-activity-time">{formatRelativeTime(item.timestamp)}</span>
                 </div>
               </div>
-            </motion.li>
+            </li>
           ))}
-        </motion.ul>
+        </ul>
       )}
     </HomeCard>
   );

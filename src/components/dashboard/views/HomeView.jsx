@@ -8,7 +8,7 @@ import UpcomingMeeting from '../home/UpcomingMeeting.jsx';
 import PodSnapshot from '../home/PodSnapshot.jsx';
 import WeeklyGoals from '../home/WeeklyGoals.jsx';
 import RecentActivity from '../home/RecentActivity.jsx';
-import { fadeUp } from '../home/motionVariants.js';
+import { pageFade } from '../home/motionVariants.js';
 
 export default function HomeView() {
   const reduceMotion = useReducedMotion();
@@ -49,10 +49,7 @@ export default function HomeView() {
       aria-labelledby="dashboard-home-title"
       initial={reduceMotion ? false : 'hidden'}
       animate="visible"
-      variants={{
-        hidden: { opacity: 0 },
-        visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
-      }}
+      variants={pageFade}
     >
       <WelcomeSection name={profile.name} />
 
@@ -66,9 +63,7 @@ export default function HomeView() {
         <WeeklyGoals />
       </div>
 
-      <motion.div variants={fadeUp}>
-        <RecentActivity />
-      </motion.div>
+      <RecentActivity />
     </motion.section>
   );
 }

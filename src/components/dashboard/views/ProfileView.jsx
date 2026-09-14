@@ -2,29 +2,31 @@ import { useCallback, useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '../../../lib/supabase.js';
 import { buildProfileFromUser } from '../../../lib/dashboardProfile.js';
-import { buildExtendedProfile, saveProfileSettings } from '../../../lib/profileData.js';
-import CoreIdentity from '../profile/CoreIdentity.jsx';
-import CommitmentSection from '../profile/CommitmentSection.jsx';
-import ActivityHistory from '../profile/ActivityHistory.jsx';
-import PodContext from '../profile/PodContext.jsx';
-import ProfileSettings from '../profile/ProfileSettings.jsx';
-import { staggerContainer } from '../home/motionVariants.js';
+import { buildExtendedProfile } from '../../../lib/profileData.js';
+import BasicIdentity from '../profile/BasicIdentity.jsx';
+import BuilderStats from '../profile/BuilderStats.jsx';
+import CurrentStatus from '../profile/CurrentStatus.jsx';
+import PublicPortfolio from '../profile/PublicPortfolio.jsx';
+import Preferences from '../profile/Preferences.jsx';
+import AccountSettings from '../profile/AccountSettings.jsx';
+import { pageFade } from '../home/motionVariants.js';
 
 export default function ProfileView() {
   const reduceMotion = useReducedMotion();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(() => buildProfileFromUser(null));
-  const [extended, setExtended] = useState(() => buildExtendedProfile(null));
+  const [extended, setExtended] = useState(() => buildExtendedProfile(null, buildProfileFromUser(null)));
 
-  const refreshExtended = useCallback((sessionUser) => {
-    setExtended(buildExtendedProfile(sessionUser));
+  const refreshExtended = useCallback((sessionUser, baseProfile) => {
+    setExtended(buildExtendedProfile(sessionUser, baseProfile));
   }, []);
 
   useEffect(() => {
     if (!isSupabaseConfigured()) {
+      const base = buildProfileFromUser(null);
       setUser(null);
-      setProfile(buildProfileFromUser(null));
-      refreshExtended(null);
+      setProfile(base);
+      refreshExtended(null, base);
       return undefined;
     }
 
@@ -34,9 +36,10 @@ export default function ProfileView() {
       const { data } = await supabase.auth.getSession();
       if (mounted) {
         const sessionUser = data.session?.user ?? null;
+        const base = buildProfileFromUser(sessionUser);
         setUser(sessionUser);
-        setProfile(buildProfileFromUser(sessionUser));
-        refreshExtended(sessionUser);
+        setProfile(base);
+        refreshExtended(sessionUser, base);
       }
     };
 
@@ -45,9 +48,10 @@ export default function ProfileView() {
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (mounted) {
         const sessionUser = session?.user ?? null;
+        const base = buildProfileFromUser(sessionUser);
         setUser(sessionUser);
-        setProfile(buildProfileFromUser(sessionUser));
-        refreshExtended(sessionUser);
+        setProfile(base);
+        refreshExtended(sessionUser, base);
       }
     });
 
@@ -57,41 +61,47 @@ export default function ProfileView() {
     };
   }, [refreshExtended]);
 
-  const handleConfirmTimezone = () => {
-    if (extended.timezone) {
-      saveProfileSettings({ timezone: extended.timezone });
-      refreshExtended(user);
-    }
+  const handleSettingsChange = () => {
+    refreshExtended(user, profile);
   };
 
-  const handleSettingsChange = () => {
-    refreshExtended(user);
+  const handleAvatarChange = () => {
+    refreshExtended(user, profile);
   };
 
   return (
     <motion.section
       className="dashboard-profile"
-      aria-labelledby="dashboard-profile-title"
+      aria-label="Profile"
       initial={reduceMotion ? false : 'hidden'}
       animate="visible"
-      variants={staggerContainer}
+      variants={pageFade}
     >
-      <CoreIdentity
-        profile={profile}
-        extended={extended}
-        onConfirmTimezone={handleConfirmTimezone}
-      />
+      <div className="dashboard-profile-grid">
+        <BasicIdentity
+          profile={profile}
+          extended={extended}
+          onAvatarChange={handleAvatarChange}
+        />
 
-      <CommitmentSection extended={extended} />
+        <BuilderStats extended={extended} />
 
-      <ActivityHistory extended={extended} />
+        <div className="dashboard-profile-col">
+          <CurrentStatus extended={extended} />
+          <PublicPortfolio extended={extended} />
+        </div>
 
-      <PodContext extended={extended} />
-
-      <ProfileSettings
-        extended={extended}
-        onSettingsChange={handleSettingsChange}
-      />
+        <div className="dashboard-profile-col">
+          <Preferences
+            extended={extended}
+            onSettingsChange={handleSettingsChange}
+          />
+          <AccountSettings
+            extended={extended}
+            onSettingsChange={handleSettingsChange}
+          />
+        </div>
+      </div>
     </motion.section>
   );
 }

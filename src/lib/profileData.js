@@ -30,18 +30,71 @@ const TIMEZONE_LABELS = {
 };
 
 const SETTINGS_KEY = 'guild-profile-settings';
+const AVATAR_KEY = 'guild-profile-avatar';
+const PORTFOLIO_KEY = 'guild-profile-portfolio';
+
+export const AVATAR_OPTIONS = [
+  { id: 'char-top-left-boy', src: '/avatars/profile_character_top_left_boy.png', label: 'Builder boy' },
+  { id: 'char-top-right-girl', src: '/avatars/profile_character_top_right_girl.png', label: 'Builder girl' },
+  { id: 'char-center-sunglasses', src: '/avatars/profile_character_center_sunglasses_boy.png', label: 'Sunglasses' },
+  { id: 'char-bottom-left-glasses', src: '/avatars/profile_character_bottom_left_glasses_girl.png', label: 'Glasses girl' },
+  { id: 'char-bottom-right-cap', src: '/avatars/profile_character_bottom_right_cap_boy.png', label: 'Cap boy' },
+  { id: 'char2-top-left-peace', src: '/avatars/profile_character2_top_left_peace_girl.png', label: 'Peace sign' },
+  { id: 'char2-top-right-headphones', src: '/avatars/profile_character2_top_right_headphones_boy.png', label: 'Headphones' },
+  { id: 'char2-center-thumbs', src: '/avatars/profile_character2_center_sunglasses_thumbs_up_boy.png', label: 'Thumbs up' },
+  { id: 'char2-bottom-left-cap', src: '/avatars/profile_character2_bottom_left_cap_boy.png', label: 'Cap v2' },
+  { id: 'char2-bottom-right-sign', src: '/avatars/profile_character2_bottom_right_glasses_girl_sign.png', label: 'Sign girl' },
+  { id: 'char3-top-left-beanie', src: '/avatars/profile_character3_top_left_beanie_boy.png', label: 'Beanie' },
+  { id: 'char3-top-right-glasses', src: '/avatars/profile_character3_top_right_glasses_sign_boy.png', label: 'Sign boy' },
+  { id: 'char3-center-laptop', src: '/avatars/profile_character3_center_laptop_boy.png', label: 'Laptop' },
+  { id: 'char3-left-mug', src: '/avatars/profile_character3_left_mug_girl.png', label: 'Coffee mug' },
+  { id: 'char3-right-headphones', src: '/avatars/profile_character3_right_cap_headphones_girl.png', label: 'Headphones girl' },
+];
+
+const FEEDBACK_STYLES = ['Direct', 'Balanced', 'Encouraging'];
 
 const DEFAULT_SETTINGS = {
   timezone: '',
-  availability: '',
+  workingHours: '',
+  feedbackStyle: 'Balanced',
+  futurePodTypes: '',
   notifications: {
     podReminders: true,
     sessionAlerts: true,
     weeklyDigest: true,
     artifactNudges: false,
+    emailDigest: true,
+    pushUpdates: false,
   },
-  trackChangeRequested: false,
+  connectedAccounts: {
+    github: false,
+    twitter: false,
+  },
 };
+
+const DEFAULT_PORTFOLIO = [
+  {
+    id: 'proj-1',
+    name: 'Guild Landing Page',
+    description: 'Marketing site with waitlist and track selector',
+    shippedDate: weeksAgo(3),
+    links: { demo: 'https://guild.build', github: 'https://github.com/guild/landing' },
+  },
+  {
+    id: 'proj-2',
+    name: 'Auth Flow v0.1',
+    description: 'Supabase auth with OAuth and profile sync',
+    shippedDate: weeksAgo(2),
+    links: { demo: 'https://app.guild.build', github: 'https://github.com/guild/auth' },
+  },
+  {
+    id: 'proj-3',
+    name: 'Pod Dashboard',
+    description: 'Builder command room with sprint tracking',
+    shippedDate: weeksAgo(1),
+    links: { demo: 'https://app.guild.build/dashboard' },
+  },
+];
 
 const CYCLE_TOTAL_WEEKS = 8;
 
@@ -97,39 +150,6 @@ function resolveBuildingFocus(trackId, application) {
   }
 }
 
-function resolveSubGoal(trackId, application) {
-  if (!application) return '';
-
-  switch (trackId) {
-    case 'youtube':
-      return application.timeline || application.uploadCadence || '';
-    case 'ai-app':
-      return application.threeMonthReady || application.appStatus || '';
-    case 'ai-saas':
-      return Array.isArray(application.goals) ? application.goals.join(' · ') : application.stage || '';
-    case 'vibecoder':
-      return application.mainGoal || application.codingStyle || '';
-    default:
-      return '';
-  }
-}
-
-function resolveQuitConcern(application, weeklyHours) {
-  if (application?.motivationAndSacrifice) {
-    const raw = application.motivationAndSacrifice.trim();
-    const sentence = raw.split(/[.!?]/).find((s) => s.trim().length > 12);
-    if (sentence) return sentence.trim();
-    if (raw.length <= 140) return raw;
-    return `${raw.slice(0, 137)}…`;
-  }
-
-  if (weeklyHours) {
-    return `You committed to ${weeklyHours} — missing a week would break your momentum`;
-  }
-
-  return 'Staying consistent week over week is your biggest risk';
-}
-
 function getCycleProgress() {
   const cycleStart = readStorage('guild-cycle-start', null);
   const start = cycleStart ? new Date(cycleStart) : getDefaultCycleStart();
@@ -166,75 +186,71 @@ function getAttendanceData() {
   };
 }
 
-function getShipTimeline() {
-  const stored = readStorage('guild-profile-timeline', null);
-  if (stored) return stored;
-
-  return [
-    {
-      week: 1,
-      label: 'Week 1',
-      artifact: 'Landing page v0.1 live',
-      type: 'shipped',
-      date: weeksAgo(3),
-    },
-    {
-      week: 2,
-      label: 'Week 2',
-      artifact: 'Auth flow demo posted',
-      type: 'shipped',
-      date: weeksAgo(2),
-    },
-    {
-      week: 3,
-      label: 'Week 3',
-      artifact: 'Onboarding screens in Figma',
-      type: 'in-progress',
-      date: weeksAgo(1),
-    },
-    {
-      week: 4,
-      label: 'Week 4',
-      artifact: '—',
-      type: 'upcoming',
-      date: null,
-    },
-  ];
-}
-
 function weeksAgo(weeks) {
   const date = new Date();
   date.setDate(date.getDate() - weeks * 7);
   return date.toISOString();
 }
 
-function getTrioContext(userName) {
-  const stored = readStorage('guild-profile-trio', null);
-  const podMembers = getPodMembers();
-  const selfInitials = getInitials(userName || 'You');
-
-  const members = stored?.members || [
-    {
-      id: 'self',
-      name: userName || 'You',
-      initials: selfInitials,
-      isSelf: true,
-      avatarColor: '#3d6b5f',
-    },
-    ...podMembers.map((m) => ({
-      id: m.id,
-      name: m.name,
-      initials: m.initials,
-      isSelf: false,
-      avatarColor: m.avatarColor,
-    })),
-  ];
+function getBuilderStats(attendance, cycle) {
+  const stored = readStorage('guild-profile-builder-stats', null);
+  if (stored) return stored;
 
   return {
-    members,
-    togetherSince: stored?.togetherSince || weeksAgo(3),
-    podRoomUrl: '/dashboard/pod',
+    currentStreak: attendance.streak,
+    totalWeeksCompleted: cycle.currentWeek - 1,
+    projectsShipped: 3,
+    publicUpdatesPosted: 12,
+    podsJoined: 2,
   };
+}
+
+function getPortfolio() {
+  const stored = readStorage(PORTFOLIO_KEY, null);
+  if (stored && Array.isArray(stored)) return stored;
+  writeStorage(PORTFOLIO_KEY, DEFAULT_PORTFOLIO);
+  return DEFAULT_PORTFOLIO;
+}
+
+function resolveUsername(user, application) {
+  const meta = user?.user_metadata || {};
+  if (meta.username) return `@${meta.username.replace(/^@/, '')}`;
+  if (meta.user_name) return `@${meta.user_name.replace(/^@/, '')}`;
+  if (user?.email) return `@${user.email.split('@')[0]}`;
+  if (application?.fullName) {
+    const handle = application.fullName.toLowerCase().replace(/\s+/g, '');
+    return `@${handle}`;
+  }
+  return '@guildmember';
+}
+
+function resolveBio(profile, application, track) {
+  if (profile.bio) return profile.bio;
+  if (application?.mainGoal) return application.mainGoal;
+  return `${track.shortLabel} on the ${track.label} track — shipping weekly with my pod.`;
+}
+
+function resolveLocation(profile, application) {
+  if (profile.location) return profile.location;
+  if (application?.timezone) return TIMEZONE_LABELS[application.timezone] || application.timezone;
+  return '';
+}
+
+export function getSelectedAvatarId() {
+  const stored = localStorage.getItem(AVATAR_KEY);
+  if (stored && AVATAR_OPTIONS.some((a) => a.id === stored)) return stored;
+  return AVATAR_OPTIONS[0].id;
+}
+
+export function getSelectedAvatar() {
+  const id = getSelectedAvatarId();
+  return AVATAR_OPTIONS.find((a) => a.id === id) || AVATAR_OPTIONS[0];
+}
+
+export function saveSelectedAvatar(avatarId) {
+  if (!AVATAR_OPTIONS.some((a) => a.id === avatarId)) return getSelectedAvatar();
+  localStorage.setItem(AVATAR_KEY, avatarId);
+  return getSelectedAvatar();
 }
 
 export function getProfileSettings() {
@@ -250,6 +266,10 @@ export function getProfileSettings() {
       ...DEFAULT_SETTINGS.notifications,
       ...(stored.notifications || {}),
     },
+    connectedAccounts: {
+      ...DEFAULT_SETTINGS.connectedAccounts,
+      ...(stored.connectedAccounts || {}),
+    },
   };
 }
 
@@ -262,6 +282,10 @@ export function saveProfileSettings(updates) {
       ...current.notifications,
       ...(updates.notifications || {}),
     },
+    connectedAccounts: {
+      ...current.connectedAccounts,
+      ...(updates.connectedAccounts || {}),
+    },
   };
   writeStorage(SETTINGS_KEY, next);
   return next;
@@ -272,16 +296,14 @@ export function formatTimezone(value) {
   return TIMEZONE_LABELS[value] || value;
 }
 
-export function formatTogetherDuration(isoDate) {
-  const start = new Date(isoDate);
-  const diffWeeks = Math.max(1, Math.floor((Date.now() - start.getTime()) / (7 * 24 * 60 * 60 * 1000)));
-  if (diffWeeks === 1) return '1 week together';
-  if (diffWeeks < 4) return `${diffWeeks} weeks together`;
-  const months = Math.floor(diffWeeks / 4);
-  return months === 1 ? '1 month together' : `${months} months together`;
+export function formatShipDate(isoDate) {
+  const date = new Date(isoDate);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-export function buildExtendedProfile(user) {
+export { FEEDBACK_STYLES };
+
+export function buildExtendedProfile(user, baseProfile) {
   const baseTrack = getBuilderTrack();
   const trackId = baseTrack?.id || 'vibecoder';
   const track = getTrackDisplay(baseTrack);
@@ -289,43 +311,75 @@ export function buildExtendedProfile(user) {
   const settings = getProfileSettings();
   const cycle = getCycleProgress();
   const attendance = getAttendanceData();
-  const timeline = getShipTimeline();
+  const builderStats = getBuilderStats(attendance, cycle);
+  const portfolio = getPortfolio();
+  const avatar = getSelectedAvatar();
 
   const timezone = settings.timezone || application?.timezone || '';
-  const weeklyHours = application?.weeklyHours || '';
   const buildingFocus = resolveBuildingFocus(trackId, application);
-  const subGoal = resolveSubGoal(trackId, application);
-  const quitConcern = resolveQuitConcern(application, weeklyHours);
 
   if (!settings.timezone && application?.timezone) {
     saveProfileSettings({ timezone: application.timezone });
   }
 
-  const userName = user?.user_metadata?.full_name
+  if (!settings.workingHours && application?.liveSessionWindows) {
+    saveProfileSettings({ workingHours: application.liveSessionWindows });
+  }
+
+  const userName = baseProfile?.name
+    || user?.user_metadata?.full_name
     || user?.user_metadata?.name
     || application?.fullName
     || 'Guild Member';
 
-  const trio = getTrioContext(userName);
+  const podMembers = getPodMembers();
+  const weeklyProgress = {
+    completed: 2,
+    total: 4,
+    summary: '2 of 4 weekly goals complete — on track for Friday ship',
+    percent: 50,
+  };
 
   return {
     track,
     trackId,
     application,
-    timezone,
-    timezoneLabel: formatTimezone(timezone),
-    weeklyHours,
-    buildingFocus,
-    subGoal,
-    quitConcern,
-    cycle,
-    attendance: {
-      ...attendance,
-      ratioLabel: `${attendance.attended}/${attendance.scheduled} sessions attended`,
-      ratioPercent: Math.round((attendance.attended / attendance.scheduled) * 100),
+    avatar,
+    avatarOptions: AVATAR_OPTIONS,
+    identity: {
+      name: userName,
+      username: resolveUsername(user, application),
+      bio: resolveBio(baseProfile || {}, application, track),
+      location: resolveLocation(baseProfile || {}, application),
+      timezone,
+      timezoneLabel: formatTimezone(timezone),
+      memberSince: baseProfile?.memberSince || '',
+      initials: getInitials(userName),
+      email: baseProfile?.email || user?.email || '',
     },
-    timeline,
-    trio,
+    builderStats,
+    currentStatus: {
+      podName: 'Sprint Pod Alpha',
+      podUrl: '/dashboard/pod',
+      podMembers,
+      sprintGoal: buildingFocus,
+      weeklyProgress,
+      cycle,
+    },
+    portfolio,
+    preferences: {
+      workingHours: settings.workingHours || application?.liveSessionWindows || '',
+      feedbackStyle: settings.feedbackStyle,
+      feedbackStyles: FEEDBACK_STYLES,
+      notifications: settings.notifications,
+      futurePodTypes: settings.futurePodTypes,
+    },
+    account: {
+      email: baseProfile?.email || user?.email || '',
+      hasPassword: Boolean(user?.email),
+      connectedAccounts: settings.connectedAccounts,
+      currentPod: 'Sprint Pod Alpha',
+    },
     settings,
     liveSessionWindows: application?.liveSessionWindows || '',
   };
