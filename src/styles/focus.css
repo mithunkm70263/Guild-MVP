@@ -2,6 +2,9 @@
 .focus-view {
   display: grid;
   gap: clamp(28px, 4vw, 48px);
+  width: 100%;
+  max-width: 1080px;
+  margin-inline: auto;
 }
 
 .focus-kicker {

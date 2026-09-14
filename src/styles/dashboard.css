@@ -438,8 +438,10 @@
 .dashboard-main-inner {
   display: flex;
   flex-direction: column;
+  flex: 1;
   width: 100%;
   max-width: var(--dash-content-max);
+  min-height: 0;
   transition: max-width var(--dash-layout-duration) var(--dash-layout-ease);
 }
 
@@ -595,6 +597,15 @@
   transition: padding var(--dash-layout-duration) var(--dash-layout-ease);
 }
 
+.dashboard-content:has(.dashboard-pod) {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
 .dashboard-home-layout,
 .dashboard-profile,
 .dashboard-settings,
@@ -736,7 +747,7 @@
 
 /* Profile — Basic Identity */
 .profile-identity {
-  padding: 18px 20px;
+  padding: 22px 20px 20px;
   border: 1px solid var(--dash-border);
   border-radius: 18px;
   background:
@@ -751,8 +762,8 @@
 
 .profile-identity-main {
   display: flex;
-  align-items: flex-start;
-  gap: 18px;
+  align-items: center;
+  gap: 20px;
 }
 
 .profile-identity-avatar-btn {
