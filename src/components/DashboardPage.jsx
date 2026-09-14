@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
+import { Route, Routes } from 'react-router-dom';
 import DashboardSidebar from './dashboard/DashboardSidebar.jsx';
 import DashboardTopBar from './dashboard/DashboardTopBar.jsx';
 import HomeView from './dashboard/views/HomeView.jsx';
+import ProfileView from './dashboard/views/ProfileView.jsx';
 import '../styles/dashboard.css';
 
 export default function DashboardPage() {
@@ -75,7 +77,10 @@ export default function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
         >
-          <HomeView />
+          <Routes>
+            <Route index element={<HomeView />} />
+            <Route path="profile" element={<ProfileView />} />
+          </Routes>
         </motion.main>
       </div>
     </div>

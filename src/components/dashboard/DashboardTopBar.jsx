@@ -1,32 +1,14 @@
 import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase.js';
-
-function getDisplayName(user) {
-  if (!user) return 'Guild Member';
-
-  const meta = user.user_metadata || {};
-  const name =
-    meta.full_name ||
-    meta.name ||
-    meta.display_name ||
-    user.email?.split('@')[0];
-
-  if (!name) return 'Guild Member';
-  return name.charAt(0).toUpperCase() + name.slice(1);
-}
-
-function getInitials(name) {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) {
-    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-  }
-  return name.slice(0, 2).toUpperCase();
-}
+import { getDisplayName, getInitials } from '../../lib/dashboardProfile.js';
 
 export default function DashboardTopBar({ onMenuToggle, sidebarCollapsed }) {
   const reduceMotion = useReducedMotion();
+  const location = useLocation();
   const [profileName, setProfileName] = useState('Guild Member');
+  const pageContext = location.pathname.includes('/profile') ? 'Profile' : 'Dashboard';
 
   useEffect(() => {
     if (!isSupabaseConfigured()) return undefined;
@@ -76,7 +58,7 @@ export default function DashboardTopBar({ onMenuToggle, sidebarCollapsed }) {
             <line x1="4" x2="20" y1="18" y2="18" />
           </svg>
         </button>
-        <span className="dashboard-topbar-context">Dashboard</span>
+        <span className="dashboard-topbar-context">{pageContext}</span>
       </div>
 
       <div className="dashboard-topbar-profile">

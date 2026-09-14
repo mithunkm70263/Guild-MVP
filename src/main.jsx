@@ -28,7 +28,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/apply" element={<ApplicationForm />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/connect" element={<ConnectPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/dashboard/*" element={<DashboardPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
