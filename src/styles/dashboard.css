@@ -4,7 +4,8 @@
 .dashboard-shell {
   --dash-sidebar-width: 248px;
   --dash-sidebar-collapsed: 76px;
-  --dash-content-max: 1120px;
+  --dash-content-max: 1080px;
+  --dash-content-gutter: clamp(16px, 2.5vw, 40px);
   --dash-layout-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --dash-layout-duration: 0.42s;
   --dash-topbar-height: 72px;
@@ -298,7 +299,11 @@
   flex: 1;
   min-width: 0;
   margin-left: var(--dash-sidebar-width);
-  transition: margin-left var(--dash-layout-duration) var(--dash-layout-ease);
+  padding-inline: var(--dash-content-gutter);
+  box-sizing: border-box;
+  transition:
+    margin-left var(--dash-layout-duration) var(--dash-layout-ease),
+    padding var(--dash-layout-duration) var(--dash-layout-ease);
 }
 
 .dashboard-main.is-sidebar-collapsed {
@@ -308,19 +313,9 @@
 .dashboard-main-inner {
   display: flex;
   flex-direction: column;
-  width: min(var(--dash-content-max), calc(100% - 32px));
+  width: 100%;
   max-width: var(--dash-content-max);
-  margin-inline: auto;
-  --dash-optical-shift: calc(var(--dash-sidebar-width) * -0.5);
-  transform: translateX(var(--dash-optical-shift));
-  transition:
-    max-width var(--dash-layout-duration) var(--dash-layout-ease),
-    width var(--dash-layout-duration) var(--dash-layout-ease),
-    transform var(--dash-layout-duration) var(--dash-layout-ease);
-}
-
-.dashboard-main.is-sidebar-collapsed .dashboard-main-inner {
-  --dash-optical-shift: calc(var(--dash-sidebar-collapsed) * -0.5);
+  transition: max-width var(--dash-layout-duration) var(--dash-layout-ease);
 }
 
 .dashboard-topbar {
@@ -477,7 +472,9 @@
 
 .dashboard-home-layout,
 .dashboard-profile,
-.dashboard-settings {
+.dashboard-settings,
+.dashboard-pod-stub {
+  width: 100%;
   margin-inline: auto;
 }
 
@@ -526,14 +523,13 @@
   .dashboard-main,
   .dashboard-main.is-sidebar-collapsed {
     margin-left: 0;
+    padding-inline: 0;
     align-items: stretch;
   }
 
   .dashboard-main-inner {
     width: 100%;
     max-width: 100%;
-    margin-inline: 0;
-    transform: none;
   }
 
   .dashboard-topbar-menu {
