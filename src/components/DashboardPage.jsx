@@ -5,6 +5,7 @@ import DashboardSidebar from './dashboard/DashboardSidebar.jsx';
 import DashboardTopBar from './dashboard/DashboardTopBar.jsx';
 import HomeView from './dashboard/views/HomeView.jsx';
 import ProfileView from './dashboard/views/ProfileView.jsx';
+import PodRoomStub from './dashboard/views/PodRoomStub.jsx';
 import '../styles/dashboard.css';
 
 export default function DashboardPage() {
@@ -81,6 +82,7 @@ export default function DashboardPage() {
             <Routes>
               <Route index element={<HomeView />} />
               <Route path="profile" element={<ProfileView />} />
+              <Route path="pod" element={<PodRoomStub />} />
             </Routes>
           </motion.main>
         </div>
