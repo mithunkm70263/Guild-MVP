@@ -89,10 +89,10 @@ export default function DashboardSidebar({ collapsed, onToggle }) {
                 <NavLink
                   to={item.to}
                   end={item.end}
+                  data-label={item.label}
                   className={({ isActive }) =>
-                    `dashboard-nav-link${isActive ? ' is-active' : ''}`
+                    `dashboard-nav-link dashboard-nav-link--${item.id}${isActive ? ' is-active' : ''}`
                   }
-                  title={collapsed ? item.label : undefined}
                 >
                   <span className="dashboard-nav-icon">{item.icon}</span>
                   {!collapsed && <span className="dashboard-nav-text">{item.label}</span>}
