@@ -12,7 +12,9 @@ export default function DashboardTopBar({ onMenuToggle, sidebarCollapsed }) {
     ? 'Settings'
     : location.pathname.includes('/profile')
       ? 'Profile'
-      : 'Dashboard';
+      : location.pathname.includes('/focus')
+        ? 'Focus'
+        : 'Dashboard';
 
   useEffect(() => {
     if (!isSupabaseConfigured()) return undefined;
