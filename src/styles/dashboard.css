@@ -1,5 +1,6 @@
 @import './home.css';
 @import './focus.css';
+@import './pod-chat.css';
 
 /* ===== DASHBOARD SHELL ===== */
 .dashboard-shell {
@@ -597,6 +598,7 @@
 .dashboard-home-layout,
 .dashboard-profile,
 .dashboard-settings,
+.dashboard-pod,
 .dashboard-pod-stub {
   width: 100%;
   margin-inline: auto;
