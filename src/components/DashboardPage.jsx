@@ -66,22 +66,24 @@ export default function DashboardPage() {
       )}
 
       <div className={`dashboard-main${sidebarCollapsed ? ' is-sidebar-collapsed' : ''}`}>
-        <DashboardTopBar
-          onMenuToggle={handleMenuToggle}
-          sidebarCollapsed={sidebarCollapsed}
-        />
+        <div className="dashboard-main-inner">
+          <DashboardTopBar
+            onMenuToggle={handleMenuToggle}
+            sidebarCollapsed={sidebarCollapsed}
+          />
 
-        <motion.main
-          className="dashboard-content"
-          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-        >
-          <Routes>
-            <Route index element={<HomeView />} />
-            <Route path="profile" element={<ProfileView />} />
-          </Routes>
-        </motion.main>
+          <motion.main
+            className="dashboard-content"
+            initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+          >
+            <Routes>
+              <Route index element={<HomeView />} />
+              <Route path="profile" element={<ProfileView />} />
+            </Routes>
+          </motion.main>
+        </div>
       </div>
     </div>
   );
