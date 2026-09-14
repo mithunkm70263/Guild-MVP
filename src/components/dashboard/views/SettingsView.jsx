@@ -2,9 +2,13 @@ import { useCallback, useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '../../../lib/supabase.js';
 import { buildProfileFromUser } from '../../../lib/dashboardProfile.js';
-import { buildExtendedProfile } from '../../../lib/profileData.js';
-import Preferences from '../profile/Preferences.jsx';
-import AccountSettings from '../profile/AccountSettings.jsx';
+import { buildExtendedProfile, saveProfileSettings } from '../../../lib/profileData.js';
+import SettingsHeader from '../settings/SettingsHeader.jsx';
+import PreferencesSettings from '../settings/PreferencesSettings.jsx';
+import NotificationSettings from '../settings/NotificationSettings.jsx';
+import ConnectedAccounts from '../settings/ConnectedAccounts.jsx';
+import SecuritySettings from '../settings/SecuritySettings.jsx';
+import DangerZone from '../settings/DangerZone.jsx';
 import { pageFade } from '../home/motionVariants.js';
 
 export default function SettingsView() {
@@ -12,9 +16,13 @@ export default function SettingsView() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(() => buildProfileFromUser(null));
   const [extended, setExtended] = useState(() => buildExtendedProfile(null, buildProfileFromUser(null)));
+  const [settings, setSettings] = useState(() => extended.settings);
+  const [saved, setSaved] = useState(false);
 
   const refreshExtended = useCallback((sessionUser, baseProfile) => {
-    setExtended(buildExtendedProfile(sessionUser, baseProfile));
+    const next = buildExtendedProfile(sessionUser, baseProfile);
+    setExtended(next);
+    setSettings(next.settings);
   }, []);
 
   useEffect(() => {
@@ -57,9 +65,15 @@ export default function SettingsView() {
     };
   }, [refreshExtended]);
 
-  const handleSettingsChange = () => {
+  const handlePersist = (updates) => {
+    const next = saveProfileSettings(updates);
+    setSettings(next);
     refreshExtended(user, profile);
+    setSaved(true);
+    window.setTimeout(() => setSaved(false), 2000);
   };
+
+  const { preferences, account } = extended;
 
   return (
     <motion.section
@@ -69,23 +83,34 @@ export default function SettingsView() {
       animate="visible"
       variants={pageFade}
     >
-      <header className="dashboard-settings-head">
-        <h1 className="dashboard-settings-title">Settings</h1>
-        <p className="dashboard-settings-subtitle">
-          Manage your preferences, notifications, and account.
-        </p>
-      </header>
+      <SettingsHeader />
 
       <div className="dashboard-settings-stack">
-        <Preferences
-          extended={extended}
-          onSettingsChange={handleSettingsChange}
+        <PreferencesSettings
+          settings={settings}
+          preferences={preferences}
+          onPersist={handlePersist}
         />
-        <AccountSettings
-          extended={extended}
-          onSettingsChange={handleSettingsChange}
+        <NotificationSettings
+          settings={settings}
+          onPersist={handlePersist}
         />
+        <ConnectedAccounts
+          settings={settings}
+          onPersist={handlePersist}
+        />
+        <SecuritySettings account={account} />
+        <DangerZone account={account} />
       </div>
+
+      {saved && (
+        <p className="settings-saved-toast" role="status">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Settings saved
+        </p>
+      )}
     </motion.section>
   );
 }
