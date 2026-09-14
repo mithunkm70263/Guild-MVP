@@ -597,13 +597,46 @@
   transition: padding var(--dash-layout-duration) var(--dash-layout-ease);
 }
 
+/* Pod route: lock viewport height — no document scroll, only messages scroll */
+html:has(.dashboard-pod),
+body:has(.dashboard-pod) {
+  overflow: hidden;
+  height: 100%;
+}
+
+.dashboard-shell:has(.dashboard-pod) {
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
+  min-height: 0;
+}
+
+.dashboard-main:has(.dashboard-pod) {
+  flex: 1;
+  align-self: stretch;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.dashboard-main-inner:has(.dashboard-pod) {
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.dashboard-main-inner:has(.dashboard-pod) .dashboard-topbar {
+  flex-shrink: 0;
+}
+
 .dashboard-content:has(.dashboard-pod) {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  padding-top: 16px;
-  padding-bottom: 16px;
+  overflow: hidden;
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 
 .dashboard-home-layout,
