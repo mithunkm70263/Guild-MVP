@@ -96,6 +96,30 @@ const DEFAULT_PORTFOLIO = [
   },
 ];
 
+const DEFAULT_FEED_UPDATES = [
+  {
+    id: 'update-1',
+    type: 'update',
+    text: 'Week 3 ship log — auth flow merged, pod dashboard nav wired up. On track for Friday demo.',
+    timestamp: daysAgo(3),
+    linkPreview: null,
+  },
+  {
+    id: 'update-2',
+    type: 'update',
+    text: 'Joined Sprint Pod Alpha for this cycle. Goal: ship OAuth + profile sync by end of week.',
+    timestamp: daysAgo(10),
+    linkPreview: null,
+  },
+  {
+    id: 'update-3',
+    type: 'update',
+    text: 'Cycle kickoff — set weekly goals with the pod. 4 goals locked for the sprint.',
+    timestamp: daysAgo(14),
+    linkPreview: null,
+  },
+];
+
 const CYCLE_TOTAL_WEEKS = 8;
 
 function readStorage(key, fallback = null) {
@@ -192,6 +216,76 @@ function weeksAgo(weeks) {
   return date.toISOString();
 }
 
+function daysAgo(days) {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
+  return date.toISOString();
+}
+
+function extractDomain(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
+}
+
+function pickPrimaryLink(links) {
+  if (!links) return null;
+  const url = links.demo || links.github || Object.values(links)[0];
+  if (!url) return null;
+  return {
+    url,
+    title: links.demo ? 'Live demo' : 'View on GitHub',
+    domain: extractDomain(url),
+  };
+}
+
+function buildFeedItemFromProject(project) {
+  const linkPreview = pickPrimaryLink(project.links);
+  return {
+    id: `feed-${project.id}`,
+    type: 'project',
+    text: `Shipped ${project.name} — ${project.description}`,
+    timestamp: project.shippedDate,
+    linkPreview: linkPreview
+      ? { ...linkPreview, title: project.name }
+      : null,
+  };
+}
+
+function buildActivityFeed(portfolio) {
+  const projectItems = portfolio.map(buildFeedItemFromProject);
+  const updates = DEFAULT_FEED_UPDATES;
+  return [...projectItems, ...updates].sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+  );
+}
+
+export function formatRelativeTime(isoDate) {
+  const date = new Date(isoDate);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / (60 * 1000));
+  const diffHours = Math.floor(diffMs / (60 * 60 * 1000));
+  const diffDays = Math.floor(diffMs / (24 * 60 * 60 * 1000));
+  const diffWeeks = Math.floor(diffDays / 7);
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffWeeks < 5) return `${diffWeeks}w ago`;
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function formatJoinedDate(isoOrLabel) {
+  if (!isoOrLabel) return 'Jan 2025';
+  if (!isoOrLabel.includes('T') && !isoOrLabel.includes('-')) return isoOrLabel;
+  const date = new Date(isoOrLabel);
+  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+}
+
 function getBuilderStats(attendance, cycle) {
   const stored = readStorage('guild-profile-builder-stats', null);
   if (stored) return stored;
@@ -221,19 +315,21 @@ function resolveUsername(user, application) {
     const handle = application.fullName.toLowerCase().replace(/\s+/g, '');
     return `@${handle}`;
   }
-  return '@guildmember';
+  return '@mithunkm';
 }
 
 function resolveBio(profile, application, track) {
   if (profile.bio) return profile.bio;
   if (application?.mainGoal) return application.mainGoal;
-  return `${track.shortLabel} on the ${track.label} track — shipping weekly with my pod.`;
+  return `Creator on the ${track.label} track — shipping weekly with my pod.`;
 }
 
 function resolveLocation(profile, application) {
   if (profile.location) return profile.location;
+  if (application?.city) return application.city;
+  if (application?.timezone === 'IST') return 'Bangalore, India';
   if (application?.timezone) return TIMEZONE_LABELS[application.timezone] || application.timezone;
-  return '';
+  return 'Bangalore, India';
 }
 
 export function getSelectedAvatarId() {
@@ -305,7 +401,7 @@ export { FEEDBACK_STYLES };
 
 export function buildExtendedProfile(user, baseProfile) {
   const baseTrack = getBuilderTrack();
-  const trackId = baseTrack?.id || 'vibecoder';
+  const trackId = baseTrack?.id || 'youtube';
   const track = getTrackDisplay(baseTrack);
   const application = loadApplicationForTrack(trackId);
   const settings = getProfileSettings();
@@ -313,6 +409,7 @@ export function buildExtendedProfile(user, baseProfile) {
   const attendance = getAttendanceData();
   const builderStats = getBuilderStats(attendance, cycle);
   const portfolio = getPortfolio();
+  const feed = buildActivityFeed(portfolio);
   const avatar = getSelectedAvatar();
 
   const timezone = settings.timezone || application?.timezone || '';
@@ -353,11 +450,14 @@ export function buildExtendedProfile(user, baseProfile) {
       location: resolveLocation(baseProfile || {}, application),
       timezone,
       timezoneLabel: formatTimezone(timezone),
-      memberSince: baseProfile?.memberSince || '',
+      memberSince: formatJoinedDate(baseProfile?.memberSince || user?.created_at || ''),
+      joinedLabel: formatJoinedDate(baseProfile?.memberSince || user?.created_at || ''),
       initials: getInitials(userName),
       email: baseProfile?.email || user?.email || '',
     },
     builderStats,
+    statLine: `${builderStats.currentStreak} day streak · ${builderStats.projectsShipped} projects shipped · ${builderStats.podsJoined} pods joined`,
+    feed,
     currentStatus: {
       podName: 'Sprint Pod Alpha',
       podUrl: '/dashboard/pod',
@@ -367,6 +467,12 @@ export function buildExtendedProfile(user, baseProfile) {
       cycle,
     },
     portfolio,
+    pinnedStatus: {
+      podName: 'Sprint Pod Alpha',
+      cycleLabel: `Week ${cycle.currentWeek} of ${cycle.totalWeeks}`,
+      goalsLabel: `${weeklyProgress.completed}/${weeklyProgress.total} goals complete`,
+      progressPercent: weeklyProgress.percent,
+    },
     preferences: {
       workingHours: settings.workingHours || application?.liveSessionWindows || '',
       feedbackStyle: settings.feedbackStyle,

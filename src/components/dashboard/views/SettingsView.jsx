@@ -3,12 +3,11 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '../../../lib/supabase.js';
 import { buildProfileFromUser } from '../../../lib/dashboardProfile.js';
 import { buildExtendedProfile } from '../../../lib/profileData.js';
-import ProfileHeader from '../profile/ProfileHeader.jsx';
-import PinnedStatus from '../profile/PinnedStatus.jsx';
-import ProfileFeed from '../profile/ProfileFeed.jsx';
+import Preferences from '../profile/Preferences.jsx';
+import AccountSettings from '../profile/AccountSettings.jsx';
 import { pageFade } from '../home/motionVariants.js';
 
-export default function ProfileView() {
+export default function SettingsView() {
   const reduceMotion = useReducedMotion();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(() => buildProfileFromUser(null));
@@ -58,25 +57,35 @@ export default function ProfileView() {
     };
   }, [refreshExtended]);
 
-  const handleAvatarChange = () => {
+  const handleSettingsChange = () => {
     refreshExtended(user, profile);
   };
 
   return (
     <motion.section
-      className="dashboard-profile"
-      aria-label="Profile"
+      className="dashboard-settings"
+      aria-label="Settings"
       initial={reduceMotion ? false : 'hidden'}
       animate="visible"
       variants={pageFade}
     >
-      <ProfileHeader
-        profile={profile}
-        extended={extended}
-        onAvatarChange={handleAvatarChange}
-      />
-      <PinnedStatus extended={extended} />
-      <ProfileFeed extended={extended} />
+      <header className="dashboard-settings-head">
+        <h1 className="dashboard-settings-title">Settings</h1>
+        <p className="dashboard-settings-subtitle">
+          Manage your preferences, notifications, and account.
+        </p>
+      </header>
+
+      <div className="dashboard-settings-stack">
+        <Preferences
+          extended={extended}
+          onSettingsChange={handleSettingsChange}
+        />
+        <AccountSettings
+          extended={extended}
+          onSettingsChange={handleSettingsChange}
+        />
+      </div>
     </motion.section>
   );
 }
