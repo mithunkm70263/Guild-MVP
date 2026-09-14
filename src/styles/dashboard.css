@@ -294,7 +294,7 @@
 .dashboard-main {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
   flex: 1;
   min-width: 0;
   margin-left: var(--dash-sidebar-width);
@@ -303,15 +303,16 @@
 
 .dashboard-main.is-sidebar-collapsed {
   margin-left: var(--dash-sidebar-collapsed);
-  align-items: center;
 }
 
 .dashboard-main-inner {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  max-width: 100%;
-  transform: translateX(0);
+  width: min(var(--dash-content-max), calc(100% - 32px));
+  max-width: var(--dash-content-max);
+  margin-inline: auto;
+  --dash-optical-shift: calc(var(--dash-sidebar-width) * -0.5);
+  transform: translateX(var(--dash-optical-shift));
   transition:
     max-width var(--dash-layout-duration) var(--dash-layout-ease),
     width var(--dash-layout-duration) var(--dash-layout-ease),
@@ -319,10 +320,7 @@
 }
 
 .dashboard-main.is-sidebar-collapsed .dashboard-main-inner {
-  width: min(var(--dash-content-max), calc(100% - 32px));
-  max-width: var(--dash-content-max);
-  margin-inline: auto;
-  transform: translateX(calc(var(--dash-sidebar-collapsed) * -0.5));
+  --dash-optical-shift: calc(var(--dash-sidebar-collapsed) * -0.5);
 }
 
 .dashboard-topbar {
@@ -334,7 +332,7 @@
   justify-content: space-between;
   gap: 16px;
   min-height: var(--dash-topbar-height);
-  margin: 16px 20px 0;
+  margin: 16px 0 0;
   padding: 12px 20px;
   border: 1px solid var(--dash-border);
   border-radius: 18px;
@@ -350,7 +348,6 @@
 }
 
 .dashboard-main.is-sidebar-collapsed .dashboard-topbar {
-  margin-inline: 0;
   box-shadow: 0 14px 40px rgba(18, 18, 18, 0.08);
 }
 
@@ -473,18 +470,14 @@
 
 .dashboard-content {
   flex: 1;
-  padding: 24px 20px 40px;
+  padding: 24px 0 40px;
   min-height: calc(100vh - var(--dash-topbar-height) - 32px);
   transition: padding var(--dash-layout-duration) var(--dash-layout-ease);
 }
 
-.dashboard-main.is-sidebar-collapsed .dashboard-content {
-  padding-inline: 0;
-}
-
-.dashboard-main.is-sidebar-collapsed .dashboard-home-layout,
-.dashboard-main.is-sidebar-collapsed .dashboard-profile,
-.dashboard-main.is-sidebar-collapsed .dashboard-settings {
+.dashboard-home-layout,
+.dashboard-profile,
+.dashboard-settings {
   margin-inline: auto;
 }
 
@@ -536,19 +529,11 @@
     align-items: stretch;
   }
 
-  .dashboard-main.is-sidebar-collapsed .dashboard-main-inner {
+  .dashboard-main-inner {
     width: 100%;
     max-width: 100%;
     margin-inline: 0;
     transform: none;
-  }
-
-  .dashboard-main.is-sidebar-collapsed .dashboard-topbar {
-    margin-inline: 14px;
-  }
-
-  .dashboard-main.is-sidebar-collapsed .dashboard-content {
-    padding-inline: 14px;
   }
 
   .dashboard-topbar-menu {
