@@ -483,7 +483,8 @@
 }
 
 .dashboard-main.is-sidebar-collapsed .dashboard-home-layout,
-.dashboard-main.is-sidebar-collapsed .dashboard-profile {
+.dashboard-main.is-sidebar-collapsed .dashboard-profile,
+.dashboard-main.is-sidebar-collapsed .dashboard-settings {
   margin-inline: auto;
 }
 
