@@ -78,21 +78,34 @@ const DEFAULT_PORTFOLIO = [
     name: 'Guild Landing Page',
     description: 'Marketing site with waitlist and track selector',
     shippedDate: weeksAgo(3),
-    links: { demo: 'https://guild.build', github: 'https://github.com/guild/landing' },
+    shippedViaGuild: true,
+    links: {
+      demo: 'https://guild.build',
+      github: 'https://github.com/guild/landing',
+      twitter: 'https://x.com/guild',
+    },
   },
   {
     id: 'proj-2',
     name: 'Auth Flow v0.1',
     description: 'Supabase auth with OAuth and profile sync',
     shippedDate: weeksAgo(2),
-    links: { demo: 'https://app.guild.build', github: 'https://github.com/guild/auth' },
+    shippedViaGuild: true,
+    links: {
+      demo: 'https://app.guild.build',
+      github: 'https://github.com/guild/auth',
+    },
   },
   {
     id: 'proj-3',
     name: 'Pod Dashboard',
     description: 'Builder command room with sprint tracking',
     shippedDate: weeksAgo(1),
-    links: { demo: 'https://app.guild.build/dashboard' },
+    shippedViaGuild: true,
+    links: {
+      demo: 'https://app.guild.build/dashboard',
+      github: 'https://github.com/guild/dashboard',
+    },
   },
 ];
 
@@ -301,7 +314,10 @@ function getBuilderStats(attendance, cycle) {
 
 function getPortfolio() {
   const stored = readStorage(PORTFOLIO_KEY, null);
-  if (stored && Array.isArray(stored)) return stored;
+  if (stored && Array.isArray(stored) && stored.length > 0) {
+    const needsRefresh = stored.some((item) => item.shippedViaGuild === undefined);
+    if (!needsRefresh) return stored;
+  }
   writeStorage(PORTFOLIO_KEY, DEFAULT_PORTFOLIO);
   return DEFAULT_PORTFOLIO;
 }

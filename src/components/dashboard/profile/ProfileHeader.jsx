@@ -3,7 +3,7 @@ import { saveSelectedAvatar } from '../../../lib/profileData.js';
 
 export default function ProfileHeader({ profile, extended, onAvatarChange }) {
   const [pickerOpen, setPickerOpen] = useState(false);
-  const { identity, avatar, track, statLine } = extended;
+  const { identity, avatar, track } = extended;
 
   const handleAvatarSelect = (avatarId) => {
     const selected = saveSelectedAvatar(avatarId);
@@ -12,62 +12,70 @@ export default function ProfileHeader({ profile, extended, onAvatarChange }) {
   };
 
   const avatarSrc = profile.avatarUrl || avatar.src;
+  const timezoneDisplay = identity.timezone && identity.timezoneLabel !== 'Not set'
+    ? identity.timezoneLabel
+    : null;
 
   return (
-    <header className="profile-header" aria-labelledby="dashboard-profile-title">
-      <div className="profile-header-banner" aria-hidden="true" />
+    <header className="profile-identity" aria-labelledby="dashboard-profile-title">
+      <div className="profile-identity-main">
+        <button
+          type="button"
+          className="profile-identity-avatar-btn"
+          onClick={() => setPickerOpen((open) => !open)}
+          aria-expanded={pickerOpen}
+          aria-label="Choose avatar"
+        >
+          <img
+            src={avatarSrc}
+            alt=""
+            className="profile-identity-avatar"
+          />
+          <span className="profile-identity-avatar-edit">Change</span>
+        </button>
 
-      <div className="profile-header-body">
-        <div className="profile-header-top">
-          <button
-            type="button"
-            className="profile-header-avatar-btn"
-            onClick={() => setPickerOpen((open) => !open)}
-            aria-expanded={pickerOpen}
-            aria-label="Choose avatar"
-          >
-            <img
-              src={avatarSrc}
-              alt=""
-              className="profile-header-avatar"
-            />
-            <span className="profile-header-avatar-edit">Change</span>
-          </button>
+        <div className="profile-identity-copy">
+          <div className="profile-identity-title-row">
+            <div className="profile-identity-names">
+              <h1 id="dashboard-profile-title" className="profile-identity-name">
+                {identity.name}
+              </h1>
+              <p className="profile-identity-handle">{identity.username}</p>
+            </div>
+            <button
+              type="button"
+              className="profile-identity-edit-btn"
+              onClick={() => setPickerOpen((open) => !open)}
+            >
+              Edit Profile
+            </button>
+          </div>
 
-          <button
-            type="button"
-            className="profile-header-edit-btn"
-            onClick={() => setPickerOpen((open) => !open)}
-          >
-            Edit Profile
-            <span className="profile-edit-soon">Soon</span>
-          </button>
-        </div>
+          <p className="profile-identity-bio">{identity.bio}</p>
 
-        <div className="profile-header-identity">
-          <h1 id="dashboard-profile-title" className="profile-header-name">
-            {identity.name}
-          </h1>
-          <p className="profile-header-handle">{identity.username}</p>
-          <p className="profile-header-bio">{identity.bio}</p>
-
-          <div className="profile-header-meta">
+          <div className="profile-identity-meta">
             {identity.location && (
-              <span className="profile-header-meta-item">
-                <span aria-hidden="true">📍</span> {identity.location}
+              <span className="profile-identity-meta-item">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                {identity.location}
               </span>
             )}
-            {identity.joinedLabel && (
-              <span className="profile-header-meta-item">
-                <span aria-hidden="true">📅</span> Joined {identity.joinedLabel}
+            {timezoneDisplay && (
+              <span className="profile-identity-meta-item">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                {timezoneDisplay}
               </span>
             )}
             {track?.label && (
-              <span className="profile-header-track-pill">{track.label}</span>
+              <span className="profile-identity-track">{track.label}</span>
             )}
           </div>
-
-          <p className="profile-header-stats">{statLine}</p>
         </div>
       </div>
 

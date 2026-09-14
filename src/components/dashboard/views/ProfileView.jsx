@@ -4,8 +4,9 @@ import { supabase, isSupabaseConfigured } from '../../../lib/supabase.js';
 import { buildProfileFromUser } from '../../../lib/dashboardProfile.js';
 import { buildExtendedProfile } from '../../../lib/profileData.js';
 import ProfileHeader from '../profile/ProfileHeader.jsx';
-import PinnedStatus from '../profile/PinnedStatus.jsx';
-import ProfileFeed from '../profile/ProfileFeed.jsx';
+import BuilderStats from '../profile/BuilderStats.jsx';
+import CurrentStatus from '../profile/CurrentStatus.jsx';
+import PortfolioSection from '../profile/PortfolioSection.jsx';
 import { pageFade } from '../home/motionVariants.js';
 
 export default function ProfileView() {
@@ -75,8 +76,11 @@ export default function ProfileView() {
         extended={extended}
         onAvatarChange={handleAvatarChange}
       />
-      <PinnedStatus extended={extended} />
-      <ProfileFeed extended={extended} />
+      <BuilderStats extended={extended} />
+      <div className="dashboard-profile-split">
+        <CurrentStatus extended={extended} />
+        <PortfolioSection extended={extended} />
+      </div>
     </motion.section>
   );
 }
