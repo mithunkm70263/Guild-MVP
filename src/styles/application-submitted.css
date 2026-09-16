@@ -286,12 +286,18 @@
 }
 
 @media (max-width: 580px) {
+  .app-submitted {
+    padding: 24px 14px;
+    overflow-x: clip;
+  }
+
   .app-submitted-grid {
     grid-template-columns: 1fr;
   }
 
   .app-submitted-kairos {
     height: 210px;
+    width: min(240px, 80vw);
   }
 
   .app-submitted-kairos-img {
@@ -299,9 +305,29 @@
   }
 
   .app-submitted-bubble {
-    right: -4px;
-    font-size: 1.15rem;
+    right: 0;
+    left: 50%;
+    translate: -50% 0;
+    max-width: calc(100vw - 48px);
+    font-size: 1rem;
     padding: 8px 14px;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .app-submitted-title {
+    font-size: clamp(1.5rem, 7vw, 2rem);
+  }
+
+  .app-submitted-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .app-submitted-actions a,
+  .app-submitted-actions button {
+    width: 100%;
+    min-height: 48px;
   }
 }
 

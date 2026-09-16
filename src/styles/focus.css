@@ -595,11 +595,63 @@
 }
 
 @media (max-width: 720px) {
+  .focus-pre-session {
+    padding: 20px 16px;
+    border-radius: 18px;
+  }
+
+  .focus-session-exit {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 10px 16px;
+    top: 12px;
+    right: 12px;
+  }
+
+  .focus-session-pause-btn {
+    min-height: 48px;
+    min-width: 120px;
+    padding: 12px 24px;
+    font-size: 0.9rem;
+  }
+
+  .focus-end-overlay {
+    padding: 16px;
+    align-items: flex-end;
+  }
+
+  .focus-end-card {
+    border-radius: 18px 18px 0 0;
+    max-height: 90dvh;
+    overflow-y: auto;
+  }
+
+  .focus-end-actions {
+    flex-direction: column;
+  }
+
+  .focus-end-btn {
+    width: 100%;
+    min-height: 48px;
+    text-align: center;
+  }
+
   .focus-tracker-grid-layout {
     grid-template-columns: 1fr;
   }
 
   .focus-tracker-card--wide {
     grid-column: auto;
+  }
+
+  .focus-tracker-weekdays,
+  .focus-tracker-grid {
+    max-width: 100%;
+  }
+
+  .focus-input,
+  .focus-textarea {
+    font-size: 16px;
+    min-height: 48px;
   }
 }

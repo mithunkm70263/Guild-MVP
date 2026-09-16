@@ -797,9 +797,63 @@
   gap: 12px;
 }
 
+@media (max-width: 768px) {
+  .vc-apply-page {
+    padding: 16px 12px 60px;
+  }
+
+  .vc-top-nav {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .vc-back-to-builder {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  .vc-card {
+    padding: 22px 18px;
+  }
+
+  .vc-step-tabs {
+    display: none;
+  }
+
+  .vc-field input,
+  .vc-field select,
+  .vc-field textarea {
+    font-size: 16px;
+    min-height: 48px;
+  }
+
+  .vc-chip {
+    min-height: 48px;
+  }
+
+  .vc-btn-primary,
+  .vc-btn-secondary {
+    min-height: 48px;
+    padding-block: 12px;
+  }
+}
+
 @media (max-width: 580px) {
   .vc-confirm-grid {
     grid-template-columns: 1fr;
+  }
+
+  .vc-chips-row {
+    flex-direction: column;
+  }
+
+  .vc-card {
+    padding: 18px 14px;
+    border-radius: 16px;
+  }
+
+  .vc-brand span {
+    font-size: 1.45rem;
   }
 }
 

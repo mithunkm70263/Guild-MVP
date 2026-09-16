@@ -761,6 +761,16 @@
     padding: 16px 12px 60px;
   }
 
+  .as-top-nav {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .as-back-to-builder {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
   .as-card {
     padding: 22px 18px;
   }
@@ -779,6 +789,43 @@
 
   .as-confirm-grid {
     grid-template-columns: 1fr;
+  }
+
+  .as-field input,
+  .as-field select,
+  .as-field textarea {
+    font-size: 16px;
+    min-height: 48px;
+  }
+
+  .as-chip,
+  .as-option {
+    min-height: 48px;
+  }
+
+  .as-btn-primary,
+  .as-btn-secondary {
+    min-height: 48px;
+    padding-block: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .as-apply-page {
+    padding: 14px 10px 48px;
+  }
+
+  .as-brand span {
+    font-size: 1.45rem;
+  }
+
+  .as-chip-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .as-card {
+    padding: 18px 14px;
+    border-radius: 16px;
   }
 }
 

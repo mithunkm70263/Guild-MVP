@@ -703,7 +703,12 @@
 
 @media (max-width: 520px) {
   .pod-chat-header {
-    padding-inline: 14px;
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .pod-chat-header-members {
+    display: none;
   }
 
   .pod-chat-message {
@@ -712,5 +717,33 @@
 
   .pod-chat-message.is-self {
     max-width: 90%;
+  }
+
+  .pod-chat-input-bar {
+    padding: 10px 12px 12px;
+  }
+
+  .pod-chat-input {
+    font-size: 16px;
+    min-height: 44px;
+  }
+
+  .pod-chat-send-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .pod-members-toggle {
+    min-height: 44px;
+    padding-block: 10px;
+  }
+
+  .pod-kairos-helper {
+    right: 8px;
+    bottom: 8px;
+  }
+
+  .pod-kairos-img {
+    width: 56px;
   }
 }

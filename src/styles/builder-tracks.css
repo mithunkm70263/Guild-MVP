@@ -520,11 +520,29 @@
   .bt-header {
     width: calc(100% - 24px);
     padding: 8px 12px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .bt-header-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .bt-header-actions a,
+  .bt-header-actions button {
+    flex: 1;
+    min-height: 44px;
+    justify-content: center;
   }
 
   .bt-main {
     width: calc(100% - 24px);
     margin-top: 24px;
+  }
+
+  .bt-title {
+    font-size: clamp(1.65rem, 8vw, 2.2rem);
   }
 
   .bt-grid {
@@ -534,5 +552,10 @@
 
   .bt-card {
     min-height: auto;
+    padding: 20px 16px;
+  }
+
+  .bt-card-btn {
+    min-height: 48px;
   }
 }

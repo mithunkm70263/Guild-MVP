@@ -734,6 +734,20 @@ body:has(.dashboard-pod) {
 }
 
 @media (max-width: 520px) {
+  .dashboard-topbar {
+    margin-inline: 10px;
+    padding: 10px 12px;
+    min-height: 60px;
+    gap: 10px;
+  }
+
+  .dashboard-topbar-menu,
+  .dashboard-topbar-settings {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
+
   .dashboard-topbar-name-wrap {
     display: none;
   }
@@ -748,6 +762,39 @@ body:has(.dashboard-pod) {
 
   .dashboard-topbar-profile:hover {
     box-shadow: none;
+  }
+
+  .dashboard-topbar-avatar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .dashboard-content {
+    padding: 16px 0 28px;
+  }
+
+  .dashboard-nav-link {
+    min-height: 48px;
+    padding-block: 12px;
+  }
+
+  .settings-toggle {
+    min-height: 52px;
+    padding-block: 10px;
+  }
+
+  .settings-toggle-track {
+    width: 48px;
+    height: 28px;
+  }
+
+  .settings-toggle-thumb {
+    width: 22px;
+    height: 22px;
+  }
+
+  .settings-toggle-input:checked + .settings-toggle-track .settings-toggle-thumb {
+    transform: translateX(20px);
   }
 }
 
@@ -2582,6 +2629,30 @@ body:has(.dashboard-pod) {
 
   .profile-stat-card:last-child {
     grid-column: 1 / -1;
+  }
+
+  .profile-identity {
+    padding: 18px 16px;
+  }
+
+  .profile-identity-edit-btn {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+
+  .profile-identity-avatar {
+    width: 72px;
+    height: 72px;
+  }
+
+  .settings-section {
+    padding: 18px 16px;
+  }
+
+  .settings-connected-btn,
+  .settings-danger-btn {
+    min-height: 44px;
+    padding-block: 12px;
   }
 }
 

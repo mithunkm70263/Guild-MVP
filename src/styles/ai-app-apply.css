@@ -757,6 +757,16 @@
     padding: 16px 12px 60px;
   }
 
+  .aa-top-nav {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .aa-back-to-builder {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
   .aa-card {
     padding: 22px 18px;
   }
@@ -775,6 +785,43 @@
 
   .aa-confirm-grid {
     grid-template-columns: 1fr;
+  }
+
+  .aa-field input,
+  .aa-field select,
+  .aa-field textarea {
+    font-size: 16px;
+    min-height: 48px;
+  }
+
+  .aa-chip,
+  .aa-option {
+    min-height: 48px;
+  }
+
+  .aa-btn-primary,
+  .aa-btn-secondary {
+    min-height: 48px;
+    padding-block: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .aa-apply-page {
+    padding: 14px 10px 48px;
+  }
+
+  .aa-brand span {
+    font-size: 1.45rem;
+  }
+
+  .aa-chip-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .aa-card {
+    padding: 18px 14px;
+    border-radius: 16px;
   }
 }
 

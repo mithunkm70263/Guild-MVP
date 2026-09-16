@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import DashboardSidebar from './dashboard/DashboardSidebar.jsx';
 import DashboardTopBar from './dashboard/DashboardTopBar.jsx';
 import HomeView from './dashboard/views/HomeView.jsx';
@@ -12,6 +12,7 @@ import '../styles/dashboard.css';
 
 export default function DashboardPage() {
   const reduceMotion = useReducedMotion();
+  const location = useLocation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
@@ -28,12 +29,23 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
+    setMobileNavOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
     if (!mobileNavOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
     const onKeyDown = (event) => {
       if (event.key === 'Escape') setMobileNavOpen(false);
     };
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
   }, [mobileNavOpen]);
 
   const handleSidebarToggle = () => {
@@ -57,6 +69,7 @@ export default function DashboardPage() {
       <DashboardSidebar
         collapsed={sidebarCollapsed && !mobileNavOpen}
         onToggle={handleSidebarToggle}
+        onNavigate={() => setMobileNavOpen(false)}
       />
 
       {mobileNavOpen && (

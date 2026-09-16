@@ -55,7 +55,7 @@ const NAV_ITEMS = [
   },
 ];
 
-export default function DashboardSidebar({ collapsed, onToggle }) {
+export default function DashboardSidebar({ collapsed, onToggle, onNavigate }) {
   const reduceMotion = useReducedMotion();
 
   return (
@@ -104,6 +104,7 @@ export default function DashboardSidebar({ collapsed, onToggle }) {
                   to={item.to}
                   end={item.end}
                   data-label={item.label}
+                  onClick={onNavigate}
                   className={({ isActive }) =>
                     `dashboard-nav-link dashboard-nav-link--${item.id}${isActive ? ' is-active' : ''}`
                   }

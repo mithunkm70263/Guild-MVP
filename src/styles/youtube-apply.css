@@ -772,6 +772,16 @@
     padding: 16px 12px 60px;
   }
 
+  .yt-top-nav {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .yt-back-to-builder {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
   .yt-card {
     padding: 22px 18px;
   }
@@ -795,6 +805,43 @@
 
   .yt-confirm-grid {
     grid-template-columns: 1fr;
+  }
+
+  .yt-field input,
+  .yt-field select,
+  .yt-field textarea {
+    font-size: 16px;
+    min-height: 48px;
+  }
+
+  .yt-chip,
+  .yt-option {
+    min-height: 48px;
+  }
+
+  .yt-btn-primary,
+  .yt-btn-secondary {
+    min-height: 48px;
+    padding-block: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .yt-apply-page {
+    padding: 14px 10px 48px;
+  }
+
+  .yt-brand span {
+    font-size: 1.45rem;
+  }
+
+  .yt-chip-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .yt-card {
+    padding: 18px 14px;
+    border-radius: 16px;
   }
 }
 

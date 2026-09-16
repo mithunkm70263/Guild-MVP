@@ -720,6 +720,23 @@
     flex-direction: column;
     align-items: flex-start;
   }
+
+  .home-card {
+    padding: 18px 16px;
+  }
+
+  .home-welcome-title {
+    font-size: clamp(1.35rem, 6vw, 1.65rem);
+  }
+
+  .home-goal-item {
+    min-height: 44px;
+    padding-block: 10px;
+  }
+
+  .home-pod-member {
+    min-height: 44px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
