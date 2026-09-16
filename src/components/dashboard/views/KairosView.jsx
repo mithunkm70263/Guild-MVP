@@ -25,9 +25,8 @@ export default function KairosView() {
   const [isThinking, setIsThinking] = useState(false);
   const [activePose, setActivePose] = useState('idle');
   const [mascotMessage, setMascotMessage] = useState(null);
-  const [mobileTab, setMobileTab] = useState('overview'); // 'overview' | 'chat'
+  const [mobileTab, setMobileTab] = useState('chat'); // default to chat — hero experience
 
-  // Toggle task completion
   const handleToggleTask = useCallback((taskId) => {
     const next = toggleKairosTask(taskId);
     setTasks(next);
@@ -43,7 +42,6 @@ export default function KairosView() {
     }
   }, []);
 
-  // Send message to Kairos
   const handleSendMessage = useCallback(
     (text) => {
       const userMsg = {
@@ -66,11 +64,9 @@ export default function KairosView() {
       setIsThinking(true);
       setActivePose('focus');
 
-      // Simulate coach thinking & generation
       setTimeout(() => {
         const coachResponse = generateCoachResponse(text, tasks);
 
-        // If coach assigned a task, dynamically add it to Today's Focus
         if (coachResponse.assignTask) {
           const { nextTasks } = addKairosTask(coachResponse.assignTask);
           setTasks(nextTasks);
@@ -108,7 +104,6 @@ export default function KairosView() {
     [messages, tasks]
   );
 
-  // When clicking a recommended learning item, ask Kairos about it
   const handleSelectLearning = useCallback(
     (item) => {
       handleSendMessage(`Can you explain why "${item.title}" is important for our sprint?`);
@@ -117,7 +112,6 @@ export default function KairosView() {
     [handleSendMessage]
   );
 
-  // Reset demo to fresh state
   const handleResetDemo = useCallback(() => {
     const demo = resetKairosDemo();
     setTasks(demo.tasks);
@@ -139,17 +133,7 @@ export default function KairosView() {
     >
       <KairosHeader onResetDemo={handleResetDemo} />
 
-      {/* Mobile Tabs Switcher */}
       <div className="kairos-mobile-tabs" role="tablist" aria-label="Mobile view tabs">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={mobileTab === 'overview'}
-          className={`kairos-mobile-tab-btn ${mobileTab === 'overview' ? 'is-active' : ''}`}
-          onClick={() => setMobileTab('overview')}
-        >
-          Daily Overview
-        </button>
         <button
           type="button"
           role="tab"
@@ -159,11 +143,18 @@ export default function KairosView() {
         >
           Chat with Kairos
         </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mobileTab === 'overview'}
+          className={`kairos-mobile-tab-btn ${mobileTab === 'overview' ? 'is-active' : ''}`}
+          onClick={() => setMobileTab('overview')}
+        >
+          Daily Overview
+        </button>
       </div>
 
-      {/* Main Two-Column Layout */}
       <div className="kairos-layout">
-        {/* Left Column: Context & Daily Overview */}
         <div
           className={`kairos-left-col ${
             mobileTab !== 'overview' ? 'is-hidden-mobile' : ''
@@ -179,18 +170,20 @@ export default function KairosView() {
           <KairosSprintCard />
         </div>
 
-        {/* Right Column: Chat Interface */}
-        <div
+        <motion.div
           className={`kairos-chat-wrapper ${
             mobileTab !== 'chat' ? 'is-hidden-mobile' : ''
           }`}
+          initial={reduceMotion ? false : { opacity: 0, y: 16, scale: 0.985 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.45, delay: reduceMotion ? 0 : 0.08, ease: [0.16, 1, 0.3, 1] }}
         >
           <KairosChatPanel
             messages={messages}
             isThinking={isThinking}
             onSendMessage={handleSendMessage}
           />
-        </div>
+        </motion.div>
       </div>
     </motion.div>
   );

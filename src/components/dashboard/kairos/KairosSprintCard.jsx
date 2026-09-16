@@ -1,10 +1,18 @@
+import { motion, useReducedMotion } from 'framer-motion';
 import { getSprintContext } from '../../../lib/kairosData.js';
 
 export default function KairosSprintCard() {
+  const reduceMotion = useReducedMotion();
   const sprint = getSprintContext();
 
   return (
-    <aside className="kairos-sprint-card" aria-label="Current sprint context">
+    <motion.aside
+      className="kairos-sprint-card"
+      aria-label="Current sprint context"
+      initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: reduceMotion ? 0 : 0.24, ease: [0.16, 1, 0.3, 1] }}
+    >
       <div className="kairos-sprint-top">
         <span className="kairos-sprint-week">{sprint.weekLabel}</span>
         <span className="kairos-sprint-days">{sprint.daysUntilShip} days to Sunday ship</span>
@@ -13,9 +21,11 @@ export default function KairosSprintCard() {
       <p className="kairos-sprint-goal">{sprint.sprintGoal}</p>
 
       <div className="kairos-sprint-bar" aria-label={`Sprint ${sprint.progressPercent}% complete`}>
-        <div
+        <motion.div
           className="kairos-sprint-bar-fill"
-          style={{ width: `${sprint.progressPercent}%` }}
+          initial={reduceMotion ? false : { width: 0 }}
+          animate={{ width: `${sprint.progressPercent}%` }}
+          transition={{ duration: reduceMotion ? 0 : 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
         />
       </div>
 
@@ -36,6 +46,6 @@ export default function KairosSprintCard() {
         </svg>
         <span>{sprint.podSyncNote}</span>
       </p>
-    </aside>
+    </motion.aside>
   );
 }

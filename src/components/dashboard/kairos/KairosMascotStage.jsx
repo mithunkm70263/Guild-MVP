@@ -20,6 +20,7 @@ export default function KairosMascotStage({ pose = 'idle', customMessage = null 
   const reduceMotion = useReducedMotion();
   const [tipIndex, setTipIndex] = useState(0);
   const [clickReaction, setClickReaction] = useState(false);
+  const [blink, setBlink] = useState(false);
 
   useEffect(() => {
     if (reduceMotion) return undefined;
@@ -28,6 +29,27 @@ export default function KairosMascotStage({ pose = 'idle', customMessage = null 
     }, 8000);
     return () => clearInterval(interval);
   }, [reduceMotion]);
+
+  // Occasional blink / tilt accent on idle
+  useEffect(() => {
+    if (reduceMotion || pose !== 'idle') return undefined;
+    const schedule = () => {
+      const delay = 3200 + Math.random() * 4200;
+      return setTimeout(() => {
+        setBlink(true);
+        setTimeout(() => setBlink(false), 160);
+      }, delay);
+    };
+    let timer = schedule();
+    const loop = setInterval(() => {
+      clearTimeout(timer);
+      timer = schedule();
+    }, 7000);
+    return () => {
+      clearTimeout(timer);
+      clearInterval(loop);
+    };
+  }, [reduceMotion, pose]);
 
   const currentPose = POSE_MAP[pose] || POSE_MAP.idle;
   const displaySpeech = customMessage || RANDOM_TIPS[tipIndex];
@@ -39,10 +61,14 @@ export default function KairosMascotStage({ pose = 'idle', customMessage = null 
   };
 
   return (
-    <div className="kairos-mascot-card">
+    <motion.div
+      className="kairos-mascot-card"
+      initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+    >
       <div className="kairos-mascot-glow" aria-hidden="true" />
 
-      {/* Speech Bubble */}
       <AnimatePresence mode="wait">
         <motion.div
           key={displaySpeech}
@@ -57,7 +83,6 @@ export default function KairosMascotStage({ pose = 'idle', customMessage = null 
         </motion.div>
       </AnimatePresence>
 
-      {/* Mascot Animated Figure */}
       <motion.div
         className="kairos-mascot-figure"
         onClick={handleMascotClick}
@@ -66,21 +91,27 @@ export default function KairosMascotStage({ pose = 'idle', customMessage = null 
           reduceMotion
             ? {}
             : clickReaction
-            ? { scale: [1, 1.12, 0.98, 1], rotate: [0, -4, 4, 0] }
-            : {
-                y: [0, -7, 0],
-                rotate: [-0.6, 0.8, -0.6],
-              }
+              ? { scale: [1, 1.12, 0.98, 1], rotate: [0, -4, 4, 0] }
+              : blink
+                ? { scaleY: [1, 0.88, 1], rotate: [0, 2.2, 0] }
+                : {
+                    y: [0, -6, 0],
+                    scale: [1, 1.025, 1],
+                    rotate: [-0.8, 0.9, -0.8],
+                  }
         }
         transition={
           reduceMotion
             ? {}
             : clickReaction
-            ? { duration: 0.6, ease: 'easeOut' }
-            : {
-                y: { duration: 4.2, repeat: Infinity, ease: 'easeInOut' },
-                rotate: { duration: 5.4, repeat: Infinity, ease: 'easeInOut' },
-              }
+              ? { duration: 0.6, ease: 'easeOut' }
+              : blink
+                ? { duration: 0.18, ease: 'easeInOut' }
+                : {
+                    y: { duration: 4.6, repeat: Infinity, ease: 'easeInOut' },
+                    scale: { duration: 4.6, repeat: Infinity, ease: 'easeInOut' },
+                    rotate: { duration: 5.8, repeat: Infinity, ease: 'easeInOut' },
+                  }
         }
       >
         <AnimatePresence mode="wait">
@@ -99,15 +130,12 @@ export default function KairosMascotStage({ pose = 'idle', customMessage = null 
         <div className="kairos-mascot-pedestal" aria-hidden="true" />
       </motion.div>
 
-      {/* Mascot Status Badge */}
       <div className="kairos-mascot-footer">
         <span className="kairos-mascot-badge">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 2l2.4 5 5.6.8-4 4 1 5.6-5-2.6-5 2.6 1-5.6-4-4 5.6-.8z" />
-          </svg>
-          Accountability Companion
+          <span className="kairos-mascot-ready-dot" aria-hidden="true" />
+          Online &amp; Ready
         </span>
       </div>
-    </div>
+    </motion.div>
   );
 }

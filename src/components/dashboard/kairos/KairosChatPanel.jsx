@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { QUICK_PROMPTS } from '../../../lib/kairosData.js';
 import KairosEmptyState from './KairosEmptyState.jsx';
@@ -13,20 +13,20 @@ function FormattedMessage({ text }) {
   return (
     <div className="kairos-msg-text">
       {lines.map((line, lineIdx) => {
-        // Handle markdown header
         if (line.startsWith('### ')) {
           return (
-            <div key={lineIdx} style={{ fontWeight: 800, margin: '6px 0 4px', fontSize: '0.98rem' }}>
+            <div
+              key={lineIdx}
+              style={{ fontWeight: 800, margin: '6px 0 4px', fontSize: '0.98rem' }}
+            >
               {line.slice(4)}
             </div>
           );
         }
 
-        // Handle bullet points
         const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('• ');
         const content = isBullet ? line.trim().slice(2) : line;
 
-        // Parse inline bold and code
         const parts = [];
         const regex = /(\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*)/g;
         let lastIndex = 0;
@@ -69,6 +69,64 @@ function FormattedMessage({ text }) {
   );
 }
 
+function ChatMessage({ msg, index, isNew, reduceMotion }) {
+  const isKairos = msg.sender === 'kairos';
+  const entranceDelay = isNew
+    ? 0
+    : reduceMotion
+      ? 0
+      : Math.min(index * 0.045, 0.28);
+
+  return (
+    <motion.div
+      className={`kairos-msg-row ${
+        isKairos ? 'kairos-msg-row--kairos' : 'kairos-msg-row--user'
+      }`}
+      layout={!reduceMotion}
+      initial={
+        reduceMotion
+          ? false
+          : isKairos
+            ? { opacity: 0, y: 14, scale: 0.97 }
+            : { opacity: 0, y: 10, scale: 0.94 }
+      }
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{
+        duration: isKairos ? 0.38 : 0.28,
+        delay: entranceDelay,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+    >
+      {isKairos && (
+        <div className="kairos-msg-avatar">
+          <img src="/kairos.png" alt="" aria-hidden="true" />
+        </div>
+      )}
+
+      <motion.div
+        className="kairos-msg-bubble"
+        whileHover={reduceMotion ? undefined : { y: -1 }}
+        transition={{ duration: 0.18 }}
+      >
+        <FormattedMessage text={msg.text} />
+
+        {msg.cardType === 'task-assigned' && msg.cardData && (
+          <div className="kairos-chat-embedded-card">
+            <span className="kairos-embedded-card-text">
+              ⚡ Added to Today&apos;s Focus: {msg.cardData.title}
+            </span>
+            <span className="kairos-embedded-card-badge">
+              {msg.cardData.focusMinutes}M FOCUS
+            </span>
+          </div>
+        )}
+
+        <div className="kairos-msg-meta">{msg.timestamp || 'Just now'}</div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function KairosChatPanel({
   messages = [],
   isThinking = false,
@@ -77,17 +135,45 @@ export default function KairosChatPanel({
   const reduceMotion = useReducedMotion();
   const streamContainerRef = useRef(null);
   const inputRef = useRef(null);
+  const prevCountRef = useRef(messages.length);
   const [inputValue, setInputValue] = useState('');
+  const [knownIds, setKnownIds] = useState(() => new Set(messages.map((m) => m.id)));
 
-  const scrollToBottom = () => {
-    if (streamContainerRef.current) {
-      streamContainerRef.current.scrollTop = streamContainerRef.current.scrollHeight;
+  const hasUserMessages = messages.some((m) => m.sender === 'user');
+  const showEmpty = !hasUserMessages;
+
+  // Smooth auto-scroll without hard jumps
+  useLayoutEffect(() => {
+    const el = streamContainerRef.current;
+    if (!el) return;
+
+    const behavior = reduceMotion ? 'auto' : 'smooth';
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    const shouldStick = distanceFromBottom < 120 || messages.length > prevCountRef.current;
+
+    if (shouldStick) {
+      requestAnimationFrame(() => {
+        el.scrollTo({ top: el.scrollHeight, behavior });
+      });
     }
-  };
+    prevCountRef.current = messages.length;
+  }, [messages, isThinking, reduceMotion]);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, isThinking]);
+    setKnownIds((prev) => {
+      const next = new Set(prev);
+      messages.forEach((m) => next.add(m.id));
+      return next;
+    });
+  }, [messages]);
+
+  useEffect(() => {
+    // Auto-grow textarea
+    const field = inputRef.current;
+    if (!field) return;
+    field.style.height = 'auto';
+    field.style.height = `${Math.min(field.scrollHeight, 128)}px`;
+  }, [inputValue]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -95,6 +181,9 @@ export default function KairosChatPanel({
     if (!trimmed || isThinking) return;
     onSendMessage(trimmed);
     setInputValue('');
+    if (inputRef.current) {
+      inputRef.current.style.height = 'auto';
+    }
   };
 
   const handleChipClick = (query) => {
@@ -102,132 +191,135 @@ export default function KairosChatPanel({
     onSendMessage(query);
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
   return (
     <div className="kairos-chat-card">
-      {/* Top Bar of Chat */}
       <div className="kairos-chat-head">
         <div className="kairos-chat-persona">
           <div className="kairos-chat-avatar-thumb">
             <img src="/kairos.png" alt="Kairos" />
+            <span className="kairos-chat-online-dot" aria-hidden="true" />
           </div>
           <div className="kairos-chat-name-wrap">
             <span className="kairos-chat-name">Kairos</span>
-            <span className="kairos-chat-desc">AI Accountability Coach • Pod Guide</span>
+            <span className="kairos-chat-desc">
+              <span className="kairos-chat-live-label">Online &amp; ready</span>
+              <span className="kairos-chat-desc-sep">·</span>
+              AI Accountability Coach
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Messages Stream */}
       <div ref={streamContainerRef} className="kairos-chat-stream">
-        {messages.length === 0 ? (
+        {showEmpty ? (
           <KairosEmptyState onStartChat={handleChipClick} />
         ) : (
-          messages.map((msg, index) => {
-            const isKairos = msg.sender === 'kairos';
-            return (
-              <motion.div
+          <AnimatePresence initial={false}>
+            {messages.map((msg, index) => (
+              <ChatMessage
                 key={msg.id}
-                className={`kairos-msg-row ${
-                  isKairos ? 'kairos-msg-row--kairos' : 'kairos-msg-row--user'
-                }`}
-                initial={reduceMotion ? false : { opacity: 0, y: 10, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{
-                  duration: 0.32,
-                  delay: reduceMotion ? 0 : Math.min(index * 0.04, 0.2),
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-              >
-                {isKairos && (
-                  <div className="kairos-msg-avatar">
-                    <img src="/kairos.png" alt="" aria-hidden="true" />
-                  </div>
-                )}
-
-                <div className="kairos-msg-bubble">
-                  <FormattedMessage text={msg.text} />
-
-                  {/* Embedded interactive card if assigned */}
-                  {msg.cardType === 'task-assigned' && msg.cardData && (
-                    <div className="kairos-chat-embedded-card">
-                      <span className="kairos-embedded-card-text">
-                        ⚡ Added to Today's Focus: {msg.cardData.title}
-                      </span>
-                      <span className="kairos-embedded-card-badge">
-                        {msg.cardData.focusMinutes}M FOCUS
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="kairos-msg-meta">{msg.timestamp || 'Just now'}</div>
-                </div>
-              </motion.div>
-            );
-          })
+                msg={msg}
+                index={index}
+                isNew={!knownIds.has(msg.id)}
+                reduceMotion={reduceMotion}
+              />
+            ))}
+          </AnimatePresence>
         )}
 
-        {/* Typing indicator */}
         <AnimatePresence>
           {isThinking && (
             <motion.div
               className="kairos-typing-row"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.2 }}
+              initial={reduceMotion ? false : { opacity: 0, y: 10, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={reduceMotion ? undefined : { opacity: 0, y: -6, scale: 0.98 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
             >
               <div className="kairos-msg-avatar">
                 <img src="/kairos-focus.png" alt="" aria-hidden="true" />
               </div>
-              <div className="kairos-typing-bubble">
+              <div className="kairos-typing-bubble" aria-live="polite" aria-label="Kairos is thinking">
                 <span className="kairos-dot" />
                 <span className="kairos-dot" />
                 <span className="kairos-dot" />
-                <span className="kairos-typing-label">Kairos is thinking...</span>
+                <span className="kairos-typing-label">Kairos is thinking…</span>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      {/* Suggested Quick Replies */}
-      <div className="kairos-quick-chips" role="group" aria-label="Suggested quick replies">
-        {QUICK_PROMPTS.map((prompt) => (
-          <button
-            key={prompt.label}
-            type="button"
-            className="kairos-chip-btn"
-            onClick={() => handleChipClick(prompt.query)}
-            disabled={isThinking}
-          >
-            {prompt.label}
-          </button>
-        ))}
-      </div>
+      {!showEmpty && (
+        <div className="kairos-quick-chips" role="group" aria-label="Suggested quick replies">
+          {QUICK_PROMPTS.map((prompt, index) => (
+            <motion.button
+              key={prompt.label}
+              type="button"
+              className="kairos-chip-btn"
+              onClick={() => handleChipClick(prompt.query)}
+              disabled={isThinking}
+              initial={reduceMotion ? false : { opacity: 0, y: 8, scale: 0.94 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{
+                duration: 0.28,
+                delay: reduceMotion ? 0 : 0.05 + index * 0.04,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              whileHover={
+                reduceMotion || isThinking
+                  ? undefined
+                  : { scale: 1.04, y: -1 }
+              }
+              whileTap={reduceMotion || isThinking ? undefined : { scale: 0.96 }}
+            >
+              {prompt.label}
+            </motion.button>
+          ))}
+        </div>
+      )}
 
-      {/* Input Bar */}
       <div className="kairos-chat-input-bar">
         <form className="kairos-input-form" onSubmit={handleSubmit}>
-          <input
+          <textarea
             ref={inputRef}
-            type="text"
             className="kairos-input-field"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Ask Kairos anything or share what's blocking you..."
+            onKeyDown={handleKeyDown}
+            placeholder="Ask Kairos anything… or tell me what's blocking you"
             disabled={isThinking}
-            maxLength={280}
+            maxLength={500}
+            rows={1}
             aria-label="Message to Kairos"
           />
-          <button
+          <motion.button
             type="submit"
             className="kairos-send-btn"
             disabled={!inputValue.trim() || isThinking}
             aria-label="Send message"
+            whileHover={
+              reduceMotion || !inputValue.trim() || isThinking
+                ? undefined
+                : { scale: 1.05, y: -1 }
+            }
+            whileTap={
+              reduceMotion || !inputValue.trim() || isThinking
+                ? undefined
+                : { scale: 0.92 }
+            }
+            transition={{ type: 'spring', stiffness: 520, damping: 28 }}
           >
             <svg
-              width="16"
-              height="16"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -239,7 +331,7 @@ export default function KairosChatPanel({
               <line x1="22" y1="2" x2="11" y2="13" />
               <polygon points="22 2 15 22 11 13 2 9 22 2" />
             </svg>
-          </button>
+          </motion.button>
         </form>
       </div>
     </div>

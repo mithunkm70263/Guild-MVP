@@ -5,7 +5,12 @@ export default function KairosLearningCard({ onSelectLearning }) {
   const reduceMotion = useReducedMotion();
 
   return (
-    <div className="kairos-learning-card">
+    <motion.div
+      className="kairos-learning-card"
+      initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: reduceMotion ? 0 : 0.18, ease: [0.16, 1, 0.3, 1] }}
+    >
       <div className="kairos-learning-head">
         <h2 className="kairos-learning-title">Recommended Learning</h2>
       </div>
@@ -21,9 +26,15 @@ export default function KairosLearningCard({ onSelectLearning }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{
               duration: 0.35,
-              delay: reduceMotion ? 0 : 0.1 + index * 0.05,
+              delay: reduceMotion ? 0 : 0.2 + index * 0.05,
               ease: [0.16, 1, 0.3, 1],
             }}
+            whileHover={
+              reduceMotion
+                ? undefined
+                : { y: -3, scale: 1.01, transition: { duration: 0.2 } }
+            }
+            whileTap={reduceMotion ? undefined : { scale: 0.985 }}
           >
             <div className="kairos-learn-item-top">
               <span className="kairos-learn-type">{item.type}</span>
@@ -34,6 +45,6 @@ export default function KairosLearningCard({ onSelectLearning }) {
           </motion.button>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
