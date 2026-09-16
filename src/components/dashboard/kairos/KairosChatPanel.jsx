@@ -3,6 +3,9 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { QUICK_PROMPTS } from '../../../lib/kairosData.js';
 import KairosEmptyState from './KairosEmptyState.jsx';
 
+const KAIROS_AVATAR = '/kairos-noted.png';
+const KAIROS_TYPING_AVATAR = '/kairos-focus.png';
+
 /**
  * Format markdown-like text to React elements:
  * Handles **bold**, *italic*, `code`, and newlines / bullet points
@@ -99,7 +102,7 @@ function ChatMessage({ msg, index, isNew, reduceMotion }) {
     >
       {isKairos && (
         <div className="kairos-msg-avatar">
-          <img src="/kairos.png" alt="" aria-hidden="true" />
+          <img src={KAIROS_AVATAR} alt="" aria-hidden="true" />
         </div>
       )}
 
@@ -142,7 +145,6 @@ export default function KairosChatPanel({
   const hasUserMessages = messages.some((m) => m.sender === 'user');
   const showEmpty = !hasUserMessages;
 
-  // Smooth auto-scroll without hard jumps
   useLayoutEffect(() => {
     const el = streamContainerRef.current;
     if (!el) return;
@@ -168,7 +170,6 @@ export default function KairosChatPanel({
   }, [messages]);
 
   useEffect(() => {
-    // Auto-grow textarea
     const field = inputRef.current;
     if (!field) return;
     field.style.height = 'auto';
@@ -200,22 +201,11 @@ export default function KairosChatPanel({
 
   return (
     <div className="kairos-chat-card">
-      <div className="kairos-chat-head">
-        <div className="kairos-chat-persona">
-          <div className="kairos-chat-avatar-thumb">
-            <img src="/kairos.png" alt="Kairos" />
-            <span className="kairos-chat-online-dot" aria-hidden="true" />
-          </div>
-          <div className="kairos-chat-name-wrap">
-            <span className="kairos-chat-name">Kairos</span>
-            <span className="kairos-chat-desc">
-              <span className="kairos-chat-live-label">Online &amp; ready</span>
-              <span className="kairos-chat-desc-sep">·</span>
-              AI Accountability Coach
-            </span>
-          </div>
+      {!showEmpty && (
+        <div className="kairos-presence-corner" aria-hidden="true">
+          <img src={KAIROS_AVATAR} alt="" />
         </div>
-      </div>
+      )}
 
       <div ref={streamContainerRef} className="kairos-chat-stream">
         {showEmpty ? (
@@ -244,7 +234,7 @@ export default function KairosChatPanel({
               transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
             >
               <div className="kairos-msg-avatar">
-                <img src="/kairos-focus.png" alt="" aria-hidden="true" />
+                <img src={KAIROS_TYPING_AVATAR} alt="" aria-hidden="true" />
               </div>
               <div className="kairos-typing-bubble" aria-live="polite" aria-label="Kairos is thinking">
                 <span className="kairos-dot" />
@@ -257,34 +247,32 @@ export default function KairosChatPanel({
         </AnimatePresence>
       </div>
 
-      {!showEmpty && (
-        <div className="kairos-quick-chips" role="group" aria-label="Suggested quick replies">
-          {QUICK_PROMPTS.map((prompt, index) => (
-            <motion.button
-              key={prompt.label}
-              type="button"
-              className="kairos-chip-btn"
-              onClick={() => handleChipClick(prompt.query)}
-              disabled={isThinking}
-              initial={reduceMotion ? false : { opacity: 0, y: 8, scale: 0.94 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{
-                duration: 0.28,
-                delay: reduceMotion ? 0 : 0.05 + index * 0.04,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              whileHover={
-                reduceMotion || isThinking
-                  ? undefined
-                  : { scale: 1.04, y: -1 }
-              }
-              whileTap={reduceMotion || isThinking ? undefined : { scale: 0.96 }}
-            >
-              {prompt.label}
-            </motion.button>
-          ))}
-        </div>
-      )}
+      <div className="kairos-quick-chips" role="group" aria-label="Suggested quick replies">
+        {QUICK_PROMPTS.map((prompt, index) => (
+          <motion.button
+            key={prompt.label}
+            type="button"
+            className="kairos-chip-btn"
+            onClick={() => handleChipClick(prompt.query)}
+            disabled={isThinking}
+            initial={reduceMotion ? false : { opacity: 0, y: 8, scale: 0.94 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{
+              duration: 0.28,
+              delay: reduceMotion ? 0 : 0.05 + index * 0.04,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            whileHover={
+              reduceMotion || isThinking
+                ? undefined
+                : { scale: 1.04, y: -1 }
+            }
+            whileTap={reduceMotion || isThinking ? undefined : { scale: 0.96 }}
+          >
+            {prompt.label}
+          </motion.button>
+        ))}
+      </div>
 
       <div className="kairos-chat-input-bar">
         <form className="kairos-input-form" onSubmit={handleSubmit}>

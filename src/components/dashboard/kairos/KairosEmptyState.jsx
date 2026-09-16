@@ -16,7 +16,7 @@ export default function KairosEmptyState({ onStartChat }) {
       transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
     >
       <motion.img
-        src="/kairos.png"
+        src="/kairos-noted.png"
         alt="Kairos mascot"
         className="kairos-empty-duck"
         animate={
