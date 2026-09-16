@@ -662,22 +662,36 @@
 
 /* Responsive */
 @media (max-width: 900px) {
-  .dashboard-content:has(.dashboard-pod) {
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-
   .pod-chat-layout {
     grid-template-columns: 1fr;
     grid-template-rows: auto minmax(0, 1fr);
-    gap: 10px;
+    gap: 14px;
+  }
+
+  .pod-chat-main {
+    min-height: 0;
+    border-radius: 18px;
+  }
+
+  .pod-chat-header {
+    padding: 16px 18px 12px;
+    gap: 10px 14px;
+  }
+
+  .pod-chat-title {
+    font-size: clamp(1.15rem, 4.5vw, 1.4rem);
+  }
+
+  .pod-chat-messages-wrap {
+    padding: 14px 16px;
   }
 
   .pod-members-panel {
     order: -1;
     flex-shrink: 0;
     height: auto;
-    max-height: min(200px, 32dvh);
+    max-height: min(180px, 28dvh);
+    border-radius: 16px;
   }
 
   .pod-members-panel.is-collapsed .pod-members-body {
@@ -685,10 +699,6 @@
     opacity: 0;
     padding-bottom: 0;
     overflow: hidden;
-  }
-
-  .pod-chat-main {
-    min-height: 0;
   }
 
   .pod-kairos-helper {
@@ -701,41 +711,71 @@
   }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 480px) {
+  .pod-chat-layout {
+    gap: 12px;
+  }
+
   .pod-chat-header {
-    padding: 14px;
+    padding: 14px 16px 12px;
+    gap: 8px;
+  }
+
+  .pod-chat-header-main {
     gap: 10px;
+    min-width: 0;
   }
 
   .pod-chat-header-members {
     display: none;
   }
 
+  .pod-chat-title {
+    font-size: clamp(1.05rem, 4.8vw, 1.25rem);
+  }
+
+  .pod-chat-online-badge {
+    font-size: 0.68rem;
+    padding: 3px 8px;
+  }
+
+  .pod-chat-messages-wrap {
+    padding: 12px 14px;
+    gap: 12px;
+  }
+
   .pod-chat-message {
-    max-width: 94%;
+    max-width: 92%;
   }
 
   .pod-chat-message.is-self {
-    max-width: 90%;
+    max-width: 88%;
   }
 
   .pod-chat-input-bar {
-    padding: 10px 12px 12px;
+    padding: 12px 14px 14px;
+    gap: 10px;
   }
 
   .pod-chat-input {
     font-size: 16px;
     min-height: 44px;
+    padding: 10px 14px;
   }
 
   .pod-chat-send-btn {
     width: 44px;
     height: 44px;
+    flex-shrink: 0;
   }
 
   .pod-members-toggle {
     min-height: 44px;
-    padding-block: 10px;
+    padding: 10px 14px;
+  }
+
+  .pod-members-panel {
+    max-height: min(160px, 26dvh);
   }
 
   .pod-kairos-helper {
@@ -744,6 +784,6 @@
   }
 
   .pod-kairos-img {
-    width: 56px;
+    width: 52px;
   }
 }

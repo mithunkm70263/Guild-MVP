@@ -704,29 +704,76 @@
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
+  .dashboard-home-layout {
+    gap: var(--dash-mobile-section-gap, 22px);
+  }
+
+  .dashboard-home-row {
+    gap: var(--dash-mobile-section-gap, 22px);
+  }
+
   .dashboard-home-row--primary,
   .dashboard-home-row--secondary {
     grid-template-columns: 1fr;
   }
+
+  .home-welcome {
+    padding: 18px 16px;
+  }
+
+  .home-card {
+    padding: 18px 16px;
+    gap: 16px;
+  }
+
+  .home-card-title {
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .home-card-subtitle {
+    font-size: 0.84rem;
+    line-height: 1.4;
+  }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 480px) {
   .home-card-head-row {
     flex-direction: column;
     align-items: flex-start;
+    gap: 8px;
   }
 
   .home-welcome-meta {
     flex-direction: column;
     align-items: flex-start;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .home-welcome {
+    padding: 16px;
+    border-radius: 14px;
   }
 
   .home-card {
-    padding: 18px 16px;
+    padding: 16px;
+    border-radius: 14px;
+    gap: 14px;
   }
 
   .home-welcome-title {
-    font-size: clamp(1.35rem, 6vw, 1.65rem);
+    font-size: clamp(1.2rem, 5.5vw, 1.45rem);
+    line-height: 1.15;
+  }
+
+  .home-welcome-status {
+    font-size: 0.84rem;
+    line-height: 1.5;
+  }
+
+  .home-card-title {
+    font-size: 0.95rem;
   }
 
   .home-goal-item {
@@ -736,6 +783,11 @@
 
   .home-pod-member {
     min-height: 44px;
+  }
+
+  .home-activity-item {
+    gap: 10px;
+    padding-block: 10px;
   }
 }
 

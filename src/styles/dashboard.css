@@ -662,9 +662,19 @@ body:has(.dashboard-pod) {
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
+  .dashboard-shell {
+    --dash-topbar-height: 64px;
+    --dash-mobile-gutter: 18px;
+    --dash-mobile-section-gap: 22px;
+  }
+
   .dashboard-sidebar {
-    transform: translateX(-110%);
-    width: min(280px, calc(100vw - 32px));
+    top: 10px;
+    left: 10px;
+    height: calc(100vh - 20px);
+    height: calc(100dvh - 20px);
+    transform: translateX(calc(-100% - 20px));
+    width: min(280px, calc(100vw - 20px));
   }
 
   .dashboard-shell.is-mobile-nav-open .dashboard-sidebar {
@@ -672,7 +682,7 @@ body:has(.dashboard-pod) {
   }
 
   .dashboard-sidebar.is-collapsed {
-    width: min(280px, calc(100vw - 32px));
+    width: min(280px, calc(100vw - 20px));
   }
 
   .dashboard-sidebar.is-collapsed .dashboard-sidebar-logo span,
@@ -724,28 +734,87 @@ body:has(.dashboard-pod) {
   }
 
   .dashboard-topbar {
-    margin-inline: 14px;
-    padding-inline: 14px;
+    margin: 12px var(--dash-mobile-gutter) 0;
+    padding: 10px 14px;
+    min-height: 56px;
+    gap: 12px;
   }
 
   .dashboard-content {
-    padding-inline: 14px;
+    padding: 20px var(--dash-mobile-gutter) 36px;
+  }
+
+  .dashboard-content:has(.dashboard-pod) {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .dashboard-profile {
+    gap: var(--dash-mobile-section-gap);
+  }
+
+  .dashboard-profile-split {
+    gap: var(--dash-mobile-section-gap);
+  }
+
+  .dashboard-settings {
+    gap: var(--dash-mobile-section-gap);
+  }
+
+  .dashboard-settings-stack {
+    gap: 20px;
+  }
+
+  .dashboard-settings-title {
+    font-size: clamp(1.35rem, 5vw, 1.65rem);
+  }
+
+  .profile-section,
+  .profile-stats {
+    padding: 18px 16px;
+  }
+
+  .profile-identity-main {
+    gap: 16px;
+  }
+
+  .settings-section-head {
+    margin-bottom: 14px;
   }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 480px) {
+  .dashboard-shell {
+    --dash-topbar-height: 56px;
+    --dash-mobile-gutter: 16px;
+    --dash-mobile-section-gap: 20px;
+  }
+
+  .dashboard-sidebar {
+    top: 8px;
+    left: 8px;
+    height: calc(100vh - 16px);
+    height: calc(100dvh - 16px);
+    width: min(272px, calc(100vw - 16px));
+  }
+
   .dashboard-topbar {
-    margin-inline: 10px;
-    padding: 10px 12px;
-    min-height: 60px;
-    gap: 10px;
+    margin-top: 10px;
+    padding: 8px 12px;
+    min-height: 52px;
+    gap: 8px;
   }
 
   .dashboard-topbar-menu,
   .dashboard-topbar-settings {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+  }
+
+  .dashboard-topbar-context {
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
   }
 
   .dashboard-topbar-name-wrap {
@@ -765,12 +834,18 @@ body:has(.dashboard-pod) {
   }
 
   .dashboard-topbar-avatar {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
+    font-size: 0.68rem;
   }
 
   .dashboard-content {
-    padding: 16px 0 28px;
+    padding: 18px var(--dash-mobile-gutter) 32px;
+  }
+
+  .dashboard-content:has(.dashboard-pod) {
+    padding-top: 8px;
+    padding-bottom: 8px;
   }
 
   .dashboard-nav-link {
@@ -795,6 +870,15 @@ body:has(.dashboard-pod) {
 
   .settings-toggle-input:checked + .settings-toggle-track .settings-toggle-thumb {
     transform: translateX(20px);
+  }
+
+  .settings-section-title {
+    font-size: 0.98rem;
+  }
+
+  .settings-section-desc {
+    font-size: 0.8rem;
+    line-height: 1.4;
   }
 }
 
@@ -2624,18 +2708,35 @@ body:has(.dashboard-pod) {
 
 @media (max-width: 480px) {
   .profile-stats-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .profile-stat-card {
+    padding: 16px 14px;
   }
 
   .profile-stat-card:last-child {
-    grid-column: 1 / -1;
+    grid-column: auto;
   }
 
   .profile-identity {
-    padding: 18px 16px;
+    padding: 20px 16px;
+  }
+
+  .profile-identity-name {
+    font-size: clamp(1.15rem, 5.5vw, 1.35rem);
+  }
+
+  .profile-identity-title-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
   }
 
   .profile-identity-edit-btn {
+    align-self: flex-start;
+    margin-left: 0;
     min-height: 44px;
     padding: 10px 16px;
   }
@@ -2645,12 +2746,27 @@ body:has(.dashboard-pod) {
     height: 72px;
   }
 
+  .profile-identity-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .profile-section-title {
+    font-size: 0.98rem;
+  }
+
   .settings-section {
     padding: 18px 16px;
   }
 
+  .settings-section-head {
+    gap: 12px;
+  }
+
   .settings-connected-btn,
   .settings-danger-btn {
+    width: 100%;
     min-height: 44px;
     padding-block: 12px;
   }

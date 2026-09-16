@@ -594,6 +594,35 @@
   border-color: var(--dash-sage);
 }
 
+@media (max-width: 900px) {
+  .focus-view {
+    gap: var(--dash-mobile-section-gap, 22px);
+  }
+
+  .focus-title {
+    font-size: clamp(1.45rem, 5vw, 1.85rem);
+  }
+
+  .focus-subtitle {
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .focus-pre-session {
+    padding: 22px 18px;
+    border-radius: 18px;
+  }
+
+  .focus-tracker-grid-layout {
+    grid-template-columns: 1fr;
+    gap: var(--dash-mobile-section-gap, 22px);
+  }
+
+  .focus-tracker-card--wide {
+    grid-column: auto;
+  }
+}
+
 @media (max-width: 720px) {
   .focus-pre-session {
     padding: 20px 16px;
@@ -636,14 +665,6 @@
     text-align: center;
   }
 
-  .focus-tracker-grid-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .focus-tracker-card--wide {
-    grid-column: auto;
-  }
-
   .focus-tracker-weekdays,
   .focus-tracker-grid {
     max-width: 100%;
@@ -653,5 +674,40 @@
   .focus-textarea {
     font-size: 16px;
     min-height: 48px;
+  }
+}
+
+@media (max-width: 480px) {
+  .focus-view {
+    gap: 20px;
+  }
+
+  .focus-title {
+    font-size: clamp(1.3rem, 5.5vw, 1.55rem);
+    margin-bottom: 8px;
+  }
+
+  .focus-pre-session {
+    padding: 18px 16px;
+    border-radius: 16px;
+  }
+
+  .focus-tracker-card {
+    padding: 16px !important;
+    border-radius: 14px;
+  }
+
+  .focus-start-btn {
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+  }
+
+  .focus-pre-form {
+    gap: 16px;
+  }
+
+  .focus-pre-header {
+    margin-bottom: 20px;
   }
 }
