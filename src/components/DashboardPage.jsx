@@ -9,6 +9,7 @@ import SettingsView from './dashboard/views/SettingsView.jsx';
 import PodRoomView from './dashboard/views/PodRoomView.jsx';
 import FocusView from './dashboard/views/FocusView.jsx';
 import MissionsView from './dashboard/views/MissionsView.jsx';
+import KairosView from './dashboard/views/KairosView.jsx';
 import '../styles/dashboard.css';
 
 export default function DashboardPage() {
@@ -97,6 +98,7 @@ export default function DashboardPage() {
           >
             <Routes>
               <Route index element={<HomeView />} />
+              <Route path="kairos" element={<KairosView />} />
               <Route path="profile" element={<ProfileView />} />
               <Route path="settings" element={<SettingsView />} />
               <Route path="pod" element={<PodRoomView />} />

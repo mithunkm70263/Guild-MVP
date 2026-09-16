@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
 
@@ -23,6 +24,18 @@ const NAV_ITEMS = [
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
         <polyline points="9 22 9 12 15 12 15 22" />
+      </svg>
+    ),
+  },
+  {
+    id: 'kairos',
+    label: 'Kairos',
+    to: '/dashboard/kairos',
+    end: true,
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z" />
+        <path d="M5 3v4M3 5h4" />
       </svg>
     ),
   },
@@ -69,17 +82,30 @@ const NAV_ITEMS = [
 
 export default function DashboardSidebar({ collapsed, onToggle, onNavigate }) {
   const reduceMotion = useReducedMotion();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 900px)');
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
 
   return (
     <motion.aside
       className={`dashboard-sidebar${collapsed ? ' is-collapsed' : ''}`}
       aria-label="Dashboard navigation"
-      initial={reduceMotion ? false : { opacity: 0, x: -16 }}
-      animate={{
-        opacity: 1,
-        x: 0,
-        width: collapsed ? 'var(--dash-sidebar-collapsed)' : 'var(--dash-sidebar-width)',
-      }}
+      initial={reduceMotion || isMobile ? false : { opacity: 0, x: -16 }}
+      animate={
+        isMobile
+          ? { opacity: 1 }
+          : {
+              opacity: 1,
+              x: 0,
+              width: collapsed ? 'var(--dash-sidebar-collapsed)' : 'var(--dash-sidebar-width)',
+            }
+      }
       transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="dashboard-sidebar-inner">

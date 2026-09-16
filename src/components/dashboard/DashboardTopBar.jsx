@@ -12,13 +12,15 @@ export default function DashboardTopBar({ onMenuToggle, sidebarCollapsed }) {
     ? 'Settings'
     : location.pathname.includes('/profile')
       ? 'Profile'
-      : location.pathname.includes('/missions')
-        ? 'Missions'
-        : location.pathname.includes('/focus')
-          ? 'Focus'
-          : location.pathname.includes('/pod')
-            ? 'My Pod'
-            : 'Dashboard';
+      : location.pathname.includes('/kairos')
+        ? 'Kairos'
+        : location.pathname.includes('/missions')
+          ? 'Missions'
+          : location.pathname.includes('/focus')
+            ? 'Focus'
+            : location.pathname.includes('/pod')
+              ? 'My Pod'
+              : 'Dashboard';
 
   useEffect(() => {
     if (!isSupabaseConfigured()) return undefined;
