@@ -1,5 +1,6 @@
 import { getBuilderTrack, getInitials } from './dashboardProfile.js';
 import { getPodMembers } from './homeData.js';
+import { getWeeklyGoalsProgress } from './missionsData.js';
 
 const APPLICATION_KEYS = {
   youtube: 'guild-yt-application',
@@ -446,11 +447,17 @@ export function buildExtendedProfile(user, baseProfile) {
     || 'Guild Member';
 
   const podMembers = getPodMembers();
+  const weeklyGoalCounts = getWeeklyGoalsProgress();
+  const weeklyPercent = weeklyGoalCounts.total > 0
+    ? Math.round((weeklyGoalCounts.completed / weeklyGoalCounts.total) * 100)
+    : 0;
   const weeklyProgress = {
-    completed: 2,
-    total: 4,
-    summary: '2 of 4 weekly goals complete — on track for Friday ship',
-    percent: 50,
+    completed: weeklyGoalCounts.completed,
+    total: weeklyGoalCounts.total,
+    summary: weeklyGoalCounts.total > 0
+      ? `${weeklyGoalCounts.completed} of ${weeklyGoalCounts.total} weekly goals complete — on track for Friday ship`
+      : 'No weekly missions yet — add goals on the Missions page',
+    percent: weeklyPercent,
   };
 
   return {

@@ -8,6 +8,7 @@ import ProfileView from './dashboard/views/ProfileView.jsx';
 import SettingsView from './dashboard/views/SettingsView.jsx';
 import PodRoomView from './dashboard/views/PodRoomView.jsx';
 import FocusView from './dashboard/views/FocusView.jsx';
+import MissionsView from './dashboard/views/MissionsView.jsx';
 import '../styles/dashboard.css';
 
 export default function DashboardPage() {
@@ -100,6 +101,7 @@ export default function DashboardPage() {
               <Route path="settings" element={<SettingsView />} />
               <Route path="pod" element={<PodRoomView />} />
               <Route path="focus" element={<FocusView />} />
+              <Route path="missions" element={<MissionsView />} />
             </Routes>
           </motion.main>
         </div>
