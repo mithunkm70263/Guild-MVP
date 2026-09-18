@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import KairosMascot from './KairosMascot.jsx';
+import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
+import { completeUserOnboarding } from '../lib/profiles.js';
 
 const KAIROS_MESSAGES = [
   "You're in. I felt your signal the moment you crossed the gate.",
@@ -42,8 +45,31 @@ const fadeUp = {
 
 export default function ConnectPage() {
   const navigate = useNavigate();
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
 
-  const enterDashboard = () => navigate('/dashboard');
+  const enterDashboard = async () => {
+    setSaveError('');
+    setIsSaving(true);
+
+    try {
+      if (isSupabaseConfigured()) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const result = await completeUserOnboarding(user);
+          if (!result.ok) {
+            throw result.error || new Error('Could not save your profile.');
+          }
+        }
+      }
+
+      navigate('/dashboard');
+    } catch (err) {
+      setSaveError(err.message || 'Could not save your profile. Try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <main className="connect-page dashboard-entry" aria-labelledby="connect-title">
@@ -128,11 +154,17 @@ export default function ConnectPage() {
         <motion.p className="connect-subcopy" variants={fadeUp}>
           Kairos has your command room staged. The builders who move the world are one click away.
         </motion.p>
+        {saveError ? (
+          <motion.p className="connect-subcopy" role="alert" variants={fadeUp}>
+            {saveError}
+          </motion.p>
+        ) : null}
         <motion.div variants={fadeUp}>
           <motion.button
             type="button"
             className="connect-cta"
             onClick={enterDashboard}
+            disabled={isSaving}
             whileHover={{ scale: 1.05, y: -5 }}
             whileTap={{ scale: 0.96, y: 2 }}
             initial={{ boxShadow: '0 6px 0 rgba(47,90,78,0.32), 0 0 0 rgba(74,124,110,0)' }}
@@ -147,7 +179,7 @@ export default function ConnectPage() {
               boxShadow: { duration: 2.4, repeat: Infinity, ease: 'easeInOut' },
             }}
           >
-            Dive In <span aria-hidden="true">→</span>
+            {isSaving ? 'Saving…' : 'Dive In'} <span aria-hidden="true">→</span>
           </motion.button>
         </motion.div>
       </motion.div>

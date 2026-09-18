@@ -1,31 +1,15 @@
 import { supabase, isSupabaseConfigured } from './supabase.js';
 import { FOCUS_STATUS_KEY } from './focusData.js';
+import { ensureUserProfile, isOnboardingComplete } from './profiles.js';
 
 const LOCAL_SESSION_KEYS = [FOCUS_STATUS_KEY];
 
 /**
- * Returns true when the user has a Guild profile row in Supabase.
+ * Returns true when the user has completed /connect onboarding.
  * Falls back to local builder-track selection when Supabase is not configured.
  */
 export async function hasUserProfile(user) {
-  if (!user) return false;
-
-  if (!isSupabaseConfigured()) {
-    return Boolean(localStorage.getItem('guild-builder-craft'));
-  }
-
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('id')
-    .eq('id', user.id)
-    .maybeSingle();
-
-  if (error) {
-    console.warn('Profile check failed:', error.message);
-    return false;
-  }
-
-  return Boolean(data);
+  return isOnboardingComplete(user);
 }
 
 /**
@@ -34,6 +18,8 @@ export async function hasUserProfile(user) {
  */
 export async function handlePostAuthRouting(navigate, user) {
   if (!user) return;
+
+  await ensureUserProfile(user);
 
   const hasProfile = await hasUserProfile(user);
   navigate(hasProfile ? '/dashboard' : '/connect', { replace: true });
