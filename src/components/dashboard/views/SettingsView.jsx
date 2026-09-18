@@ -9,6 +9,7 @@ import NotificationSettings from '../settings/NotificationSettings.jsx';
 import ConnectedAccounts from '../settings/ConnectedAccounts.jsx';
 import SecuritySettings from '../settings/SecuritySettings.jsx';
 import DangerZone from '../settings/DangerZone.jsx';
+import LogoutSection from '../settings/LogoutSection.jsx';
 import { pageFade } from '../home/motionVariants.js';
 
 export default function SettingsView() {
@@ -101,6 +102,7 @@ export default function SettingsView() {
         />
         <SecuritySettings account={account} />
         <DangerZone account={account} />
+        <LogoutSection />
       </div>
 
       {saved && (

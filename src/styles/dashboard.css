@@ -2147,6 +2147,61 @@ body:has(.kairos-view) {
   color: #9a6b12;
 }
 
+/* Settings — sign out */
+.settings-logout-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.settings-logout-copy {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--dash-muted);
+}
+
+.settings-logout-btn {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border: 1px solid var(--dash-border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--dash-ink);
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.settings-logout-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(74, 124, 110, 0.35);
+  box-shadow: 0 4px 12px rgba(74, 124, 110, 0.08);
+}
+
+.settings-logout-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74, 124, 110, 0.18);
+}
+
+.settings-logout-btn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.settings-logout-error {
+  margin: 10px 0 0;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--settings-danger);
+}
+
 /* Settings — danger zone */
 .settings-danger-actions {
   display: grid;
@@ -2780,7 +2835,8 @@ body:has(.kairos-view) {
   }
 
   .settings-connected-btn,
-  .settings-danger-btn {
+  .settings-danger-btn,
+  .settings-logout-btn {
     width: 100%;
     min-height: 44px;
     padding-block: 12px;

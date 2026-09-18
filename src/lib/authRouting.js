@@ -1,4 +1,7 @@
 import { supabase, isSupabaseConfigured } from './supabase.js';
+import { FOCUS_STATUS_KEY } from './focusData.js';
+
+const LOCAL_SESSION_KEYS = [FOCUS_STATUS_KEY];
 
 /**
  * Returns true when the user has a Guild profile row in Supabase.
@@ -69,4 +72,26 @@ export async function signInWithEmail(email, password) {
   }
 
   throw error;
+}
+
+function clearLocalSessionData() {
+  for (const key of LOCAL_SESSION_KEYS) {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // Ignore storage access errors during sign-out.
+    }
+  }
+}
+
+/**
+ * End the current session. Uses Supabase when configured; always clears local session data.
+ */
+export async function signOut() {
+  if (isSupabaseConfigured()) {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  }
+
+  clearLocalSessionData();
 }
