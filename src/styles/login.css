@@ -661,6 +661,19 @@
   transform: translateY(-1px);
 }
 
+.login-auth-error {
+  margin: 0;
+  padding: 10px 12px;
+  border: 2px solid #dc2626;
+  border-radius: 10px;
+  background: #fef2f2;
+  font-family: var(--font-label, 'JetBrains Mono', monospace);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #991b1b;
+  line-height: 1.4;
+}
+
 /* Card Bottom Link */
 .login-card-foot {
   display: flex;

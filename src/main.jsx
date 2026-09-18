@@ -13,10 +13,12 @@ import AIAppApplicationPage from './components/AIAppApplicationPage.jsx';
 import AISaaSApplicationPage from './components/AISaaSApplicationPage.jsx';
 import VibeCoderApplicationPage from './components/VibeCoderApplicationPage.jsx';
 import DashboardPage from './components/DashboardPage.jsx';
+import AuthSessionHandler from './components/AuthSessionHandler.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
+      <AuthSessionHandler>
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/get-started" element={<GetStartedPage />} />
@@ -30,6 +32,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/connect" element={<ConnectPage />} />
         <Route path="/dashboard/*" element={<DashboardPage />} />
       </Routes>
+      </AuthSessionHandler>
     </BrowserRouter>
   </StrictMode>,
 );

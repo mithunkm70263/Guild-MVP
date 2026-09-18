@@ -2,6 +2,12 @@ import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import KairosMascot from './KairosMascot.jsx';
+import {
+  handlePostAuthRouting,
+  signInWithEmail,
+  signInWithGoogle,
+} from '../lib/authRouting.js';
+import { isSupabaseConfigured } from '../lib/supabase.js';
 import '../styles/login.css';
 
 /* Ambient Sparkles */
@@ -125,8 +131,48 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
+  const [authError, setAuthError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  const enterConnect = () => navigate('/connect');
+  const handleGoogleSignIn = async () => {
+    setAuthError('');
+    setIsGoogleLoading(true);
+
+    try {
+      if (!isSupabaseConfigured()) {
+        navigate('/connect');
+        return;
+      }
+
+      await signInWithGoogle();
+    } catch (err) {
+      setAuthError(err.message || 'Google sign-in failed. Try again.');
+      setIsGoogleLoading(false);
+    }
+  };
+
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setIsSubmitting(true);
+
+    try {
+      if (!isSupabaseConfigured()) {
+        navigate('/connect');
+        return;
+      }
+
+      const { user } = await signInWithEmail(email, password);
+      if (user) {
+        await handlePostAuthRouting(navigate, user);
+      }
+    } catch (err) {
+      setAuthError(err.message || 'Sign-in failed. Check your email and password.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="login-page">
@@ -241,12 +287,29 @@ export default function LoginPage() {
               </div>
 
               <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  enterConnect();
-                }}
+                onSubmit={handleEmailSubmit}
                 className="login-form-brutal"
               >
+                {/* Google Sign-in */}
+                <motion.button
+                  type="button"
+                  className="login-google-btn"
+                  onClick={handleGoogleSignIn}
+                  disabled={isGoogleLoading || isSubmitting}
+                  whileHover={reduceMotion ? undefined : { y: -2, scale: 1.01 }}
+                  whileTap={{ scale: 0.98, y: 1 }}
+                >
+                  <GoogleIcon />
+                  <span>{isGoogleLoading ? 'Redirecting…' : 'Continue with Google'}</span>
+                </motion.button>
+
+                {/* Divider */}
+                <div className="login-divider-wrap">
+                  <div className="login-divider-line" />
+                  <span className="login-divider-text">or</span>
+                  <div className="login-divider-line" />
+                </div>
+
                 {/* Email Field */}
                 <div className={`login-field-brutal ${focusedField === 'email' ? 'is-focused' : ''}`}>
                   <label htmlFor="email">Email Address</label>
@@ -301,33 +364,21 @@ export default function LoginPage() {
                   </div>
                 </div>
 
+                {authError ? (
+                  <p className="login-auth-error" role="alert">
+                    {authError}
+                  </p>
+                ) : null}
+
                 {/* Submit Button */}
                 <motion.button
                   type="submit"
                   className="login-submit-btn"
+                  disabled={isSubmitting || isGoogleLoading}
                   whileHover={reduceMotion ? undefined : { y: -2, scale: 1.01 }}
                   whileTap={{ scale: 0.98, y: 1 }}
                 >
-                  <span>Login to Guild →</span>
-                </motion.button>
-
-                {/* Divider */}
-                <div className="login-divider-wrap">
-                  <div className="login-divider-line" />
-                  <span className="login-divider-text">OR CONTINUE WITH</span>
-                  <div className="login-divider-line" />
-                </div>
-
-                {/* Google Sign-in */}
-                <motion.button
-                  type="button"
-                  className="login-google-btn"
-                  onClick={enterConnect}
-                  whileHover={reduceMotion ? undefined : { y: -2, scale: 1.01 }}
-                  whileTap={{ scale: 0.98, y: 1 }}
-                >
-                  <GoogleIcon />
-                  <span>Continue with Google</span>
+                  <span>{isSubmitting ? 'Signing in…' : 'Login to Guild →'}</span>
                 </motion.button>
 
                 {/* Bottom Helper */}
