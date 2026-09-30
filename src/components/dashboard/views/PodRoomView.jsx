@@ -8,8 +8,8 @@ import KairosHelper from '../pod/KairosHelper.jsx';
 import {
   appendChatMessage,
   getChatMessages,
-  getPodMembersWithStatus,
 } from '../../../lib/podChatData.js';
+import { usePod } from '../PodProvider.jsx';
 import { pageFade } from '../home/motionVariants.js';
 
 export default function PodRoomView() {
@@ -40,7 +40,12 @@ export default function PodRoomView() {
     setMessages((prev) => [...prev, newMessage]);
   }, []);
 
-  const members = getPodMembersWithStatus();
+  const pod = usePod();
+  const members = (pod.members ?? []).map((member) => ({
+    ...member,
+    panelStatus: member.panelStatus ?? member.status,
+    isOnline: member.isOnline ?? true,
+  }));
 
   return (
     <motion.section

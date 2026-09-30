@@ -10,7 +10,9 @@ import PodRoomView from './dashboard/views/PodRoomView.jsx';
 import FocusView from './dashboard/views/FocusView.jsx';
 import MissionsView from './dashboard/views/MissionsView.jsx';
 import KairosView from './dashboard/views/KairosView.jsx';
+import { PodProvider } from './dashboard/PodProvider.jsx';
 import '../styles/dashboard.css';
+import '../styles/dashboard-touch.css';
 
 export default function DashboardPage() {
   const reduceMotion = useReducedMotion();
@@ -23,6 +25,9 @@ export default function DashboardPage() {
     const sync = () => {
       if (mq.matches) {
         setSidebarCollapsed(true);
+      } else {
+        setSidebarCollapsed(false);
+        setMobileNavOpen(false);
       }
     };
     sync();
@@ -70,6 +75,7 @@ export default function DashboardPage() {
 
       <DashboardSidebar
         collapsed={sidebarCollapsed && !mobileNavOpen}
+        mobileOpen={mobileNavOpen}
         onToggle={handleSidebarToggle}
         onNavigate={() => setMobileNavOpen(false)}
       />
@@ -84,10 +90,11 @@ export default function DashboardPage() {
       )}
 
       <div className={`dashboard-main${sidebarCollapsed ? ' is-sidebar-collapsed' : ''}`}>
+        <PodProvider>
         <div className="dashboard-main-inner">
           <DashboardTopBar
             onMenuToggle={handleMenuToggle}
-            sidebarCollapsed={sidebarCollapsed}
+            mobileNavOpen={mobileNavOpen}
           />
 
           <motion.main
@@ -107,6 +114,7 @@ export default function DashboardPage() {
             </Routes>
           </motion.main>
         </div>
+        </PodProvider>
       </div>
     </div>
   );

@@ -2,41 +2,105 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
-  SESSION_DURATION_MS,
   calculateActiveElapsedMs,
   formatTimerDisplay,
+  saveActiveSession,
   setFocusStatus,
 } from '../../../lib/focusData.js';
 
+const RING_RADIUS = 88;
+const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+
+const EASE = [0.16, 1, 0.3, 1];
+
+function remainingFromSession(session, durationMs) {
+  const elapsed = calculateActiveElapsedMs({
+    sessionStartTime: session.sessionStartTime,
+    totalPausedMs: session.totalPausedMs,
+    isPaused: session.isPaused,
+    pauseStartTime: session.pauseStartTime,
+  });
+  return Math.max(0, durationMs - elapsed);
+}
+
 export default function FocusSession({
   focusText,
+  initialSession,
   onEnd,
+  durationMs,
 }) {
   const reduceMotion = useReducedMotion();
-  const [sessionStartTime] = useState(() => Date.now());
-  const [isPaused, setIsPaused] = useState(false);
-  const [pauseUsed, setPauseUsed] = useState(false);
-  const [pauseStartTime, setPauseStartTime] = useState(null);
-  const [totalPausedMs, setTotalPausedMs] = useState(0);
-  const [remainingMs, setRemainingMs] = useState(SESSION_DURATION_MS);
+  const [sessionStartTime] = useState(() => initialSession.sessionStartTime);
+  const [isPaused, setIsPaused] = useState(() => initialSession.isPaused);
+  const [pauseUsed, setPauseUsed] = useState(() => initialSession.pauseUsed);
+  const [pauseStartTime, setPauseStartTime] = useState(() => initialSession.pauseStartTime);
+  const [totalPausedMs, setTotalPausedMs] = useState(() => initialSession.totalPausedMs);
+  const [remainingMs, setRemainingMs] = useState(() => remainingFromSession(initialSession, durationMs));
   const tickRef = useRef(null);
+  const endedRef = useRef(false);
+  const onEndRef = useRef(onEnd);
+
+  useEffect(() => {
+    onEndRef.current = onEnd;
+  }, [onEnd]);
 
   useEffect(() => {
     setFocusStatus('in-focus');
-    return () => {
-      // Status cleared by parent on session end
-    };
   }, []);
 
+  useEffect(() => {
+    if (endedRef.current) return;
+    saveActiveSession({
+      focusText,
+      sessionStartTime,
+      totalPausedMs,
+      isPaused,
+      pauseStartTime,
+      pauseUsed,
+      ended: false,
+      elapsedMs: 0,
+      endedAt: null,
+    });
+  }, [focusText, sessionStartTime, totalPausedMs, isPaused, pauseStartTime, pauseUsed]);
+
+  const finish = useCallback((pausedMs, paused, pauseStarted) => {
+    if (endedRef.current) return;
+    endedRef.current = true;
+    if (tickRef.current) {
+      clearInterval(tickRef.current);
+      tickRef.current = null;
+    }
+
+    const activeElapsed = calculateActiveElapsedMs({
+      sessionStartTime,
+      totalPausedMs: pausedMs,
+      isPaused: paused,
+      pauseStartTime: pauseStarted,
+    });
+
+    onEndRef.current({
+      sessionStartTime,
+      totalPausedMs: paused && pauseStarted
+        ? pausedMs + Date.now() - pauseStarted
+        : pausedMs,
+      elapsedMs: Math.min(durationMs, activeElapsed),
+    });
+  }, [sessionStartTime, durationMs]);
+
   const tick = useCallback(() => {
+    if (endedRef.current) return;
     const activeElapsed = calculateActiveElapsedMs({
       sessionStartTime,
       totalPausedMs,
       isPaused,
       pauseStartTime,
     });
-    setRemainingMs(Math.max(0, SESSION_DURATION_MS - activeElapsed));
-  }, [sessionStartTime, totalPausedMs, isPaused, pauseStartTime]);
+    const nextRemaining = Math.max(0, durationMs - activeElapsed);
+    setRemainingMs(nextRemaining);
+    if (nextRemaining === 0) {
+      finish(totalPausedMs, isPaused, pauseStartTime);
+    }
+  }, [sessionStartTime, totalPausedMs, isPaused, pauseStartTime, finish]);
 
   useEffect(() => {
     tick();
@@ -47,126 +111,151 @@ export default function FocusSession({
   }, [tick]);
 
   const handlePause = () => {
-    if (pauseUsed || isPaused) return;
+    if (pauseUsed || isPaused || endedRef.current) return;
     setPauseUsed(true);
     setIsPaused(true);
     setPauseStartTime(Date.now());
   };
 
   const handleResume = () => {
-    if (!isPaused || !pauseStartTime) return;
+    if (!isPaused || !pauseStartTime || endedRef.current) return;
     setTotalPausedMs((prev) => prev + Date.now() - pauseStartTime);
     setPauseStartTime(null);
     setIsPaused(false);
   };
 
   const handleEnd = () => {
-    const activeElapsed = calculateActiveElapsedMs({
-      sessionStartTime,
-      totalPausedMs,
-      isPaused,
-      pauseStartTime,
-    });
-
-    onEnd({
-      sessionStartTime,
-      totalPausedMs: isPaused && pauseStartTime
-        ? totalPausedMs + Date.now() - pauseStartTime
-        : totalPausedMs,
-      elapsedMs: activeElapsed,
-    });
+    finish(totalPausedMs, isPaused, pauseStartTime);
   };
 
-  const progress = 1 - remainingMs / SESSION_DURATION_MS;
+  const progress = 1 - remainingMs / durationMs;
+  const statusLabel = isPaused ? 'Paused' : 'remaining';
 
   return createPortal(
-    <AnimatePresence>
-      <motion.div
-        className="focus-session-overlay"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Focus session in progress"
-        initial={reduceMotion ? false : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+    <motion.div
+      className={`focus-session-overlay${isPaused ? ' is-paused' : ''}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Focus session in progress"
+      initial={reduceMotion ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: reduceMotion ? 0 : 0.55, ease: EASE }}
+    >
+      <div className="focus-session-ambient" aria-hidden="true" />
+      <div className="focus-session-ambient focus-session-ambient--gold" aria-hidden="true" />
+
+      <button
+        type="button"
+        className="focus-session-exit"
+        onClick={handleEnd}
+        aria-label="End focus session"
       >
-        <div className="focus-session-ambient" aria-hidden="true" />
-        <div className="focus-session-ambient focus-session-ambient--gold" aria-hidden="true" />
+        End session
+      </button>
 
-        <button
-          type="button"
-          className="focus-session-exit"
-          onClick={handleEnd}
-          aria-label="End focus session"
-        >
-          End session
-        </button>
+      <motion.div
+        className="focus-session-body"
+        initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: reduceMotion ? 0 : 0.7, ease: EASE, delay: reduceMotion ? 0 : 0.08 }}
+      >
+        <p className="focus-session-kicker">In focus</p>
+        <p className="focus-session-intent">{focusText}</p>
 
-        <div className="focus-session-body">
-          <p className="focus-session-intent">{focusText}</p>
+        <div className="focus-session-timer-wrap">
+          <motion.div
+            className="focus-session-timer-glow"
+            aria-hidden="true"
+            animate={reduceMotion ? undefined : {
+              scale: [1, 1.05, 1],
+              opacity: [0.45, 0.75, 0.45],
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          />
 
-          <div className="focus-session-timer-wrap">
-            <motion.div
-              className="focus-session-timer-glow"
-              aria-hidden="true"
-              animate={reduceMotion ? undefined : {
-                scale: [1, 1.06, 1],
-                opacity: [0.4, 0.7, 0.4],
-              }}
-              transition={{
-                duration: 6,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-            />
-            <motion.p
-              className="focus-session-timer"
-              key={Math.floor(remainingMs / 1000)}
-              initial={reduceMotion ? false : { opacity: 0.7 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.2 }}
-            >
-              {formatTimerDisplay(remainingMs)}
-            </motion.p>
-            <div className="focus-session-progress" aria-hidden="true">
-              <motion.div
-                className="focus-session-progress-fill"
-                initial={false}
-                animate={{ scaleX: progress }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
+          <div className="focus-session-ring-wrap">
+            <svg className="focus-session-ring-svg" viewBox="0 0 200 200" aria-hidden="true">
+              <defs>
+                <linearGradient id="focus-ring-gradient" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#7eaea0" />
+                  <stop offset="100%" stopColor="#c47d2a" />
+                </linearGradient>
+              </defs>
+              <circle className="focus-session-ring-halo" cx="100" cy="100" r="94" />
+              <circle className="focus-session-ring-track" cx="100" cy="100" r={RING_RADIUS} />
+              <circle
+                className="focus-session-ring-value"
+                cx="100"
+                cy="100"
+                r={RING_RADIUS}
+                transform="rotate(-90 100 100)"
+                style={{
+                  strokeDasharray: RING_CIRCUMFERENCE,
+                  strokeDashoffset: progress * RING_CIRCUMFERENCE,
+                  transition: reduceMotion ? 'none' : 'stroke-dashoffset 1s linear',
+                }}
               />
+            </svg>
+
+            <div className="focus-session-timer-stack">
+              <p className="focus-session-timer">{formatTimerDisplay(remainingMs)}</p>
+              <p className="focus-session-remaining-label">{statusLabel}</p>
             </div>
           </div>
+        </div>
 
-          <p className="focus-session-hint">
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={isPaused ? 'paused' : 'running'}
+            className="focus-session-hint"
+            initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: -6 }}
+            transition={{ duration: reduceMotion ? 0 : 0.35, ease: EASE }}
+          >
             {isPaused ? 'Paused — take a breath, then resume' : 'Stay with it. One block at a time.'}
-          </p>
+          </motion.p>
+        </AnimatePresence>
 
-          <div className="focus-session-actions">
+        <div className="focus-session-actions">
+          <AnimatePresence mode="wait">
             {isPaused ? (
-              <button
+              <motion.button
+                key="resume"
                 type="button"
                 className="focus-session-pause-btn"
                 onClick={handleResume}
+                initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
+                transition={{ duration: reduceMotion ? 0 : 0.3, ease: EASE }}
               >
                 Resume
-              </button>
+              </motion.button>
             ) : (
               !pauseUsed && (
-                <button
+                <motion.button
+                  key="pause"
                   type="button"
                   className="focus-session-pause-btn"
                   onClick={handlePause}
+                  initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.3, ease: EASE }}
                 >
                   Pause once
-                </button>
+                </motion.button>
               )
             )}
-          </div>
+          </AnimatePresence>
         </div>
       </motion.div>
-    </AnimatePresence>,
+    </motion.div>,
     document.body,
   );
 }

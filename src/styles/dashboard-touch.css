@@ -1,0 +1,102 @@
+.dashboard-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dashboard-shell :is(button, a, input, textarea, select) {
+  touch-action: manipulation;
+}
+
+.dashboard-shell :is(button, a):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--dash-sage) 72%, white);
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .dashboard-sidebar {
+    top: max(10px, env(safe-area-inset-top));
+    left: max(10px, env(safe-area-inset-left));
+    height: calc(100vh - max(20px, env(safe-area-inset-top)) - env(safe-area-inset-bottom));
+    height: calc(100dvh - max(20px, env(safe-area-inset-top)) - env(safe-area-inset-bottom));
+    width: min(300px, calc(100vw - 20px - env(safe-area-inset-left)));
+    pointer-events: none;
+  }
+
+  .dashboard-shell.is-mobile-nav-open .dashboard-sidebar {
+    pointer-events: auto;
+  }
+
+  .dashboard-sidebar-inner {
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .dashboard-shell.is-mobile-nav-open .dashboard-sidebar-toggle {
+    display: grid;
+    width: 44px;
+    height: 44px;
+  }
+
+  .dashboard-nav-link {
+    min-height: 52px;
+    padding-block: 10px;
+  }
+
+  .dashboard-topbar-menu,
+  .dashboard-topbar-settings {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+  }
+
+  .dashboard-mobile-scrim {
+    touch-action: manipulation;
+  }
+
+  .dashboard-content {
+    padding-bottom: max(32px, env(safe-area-inset-bottom));
+  }
+
+  .pod-chat-input-bar {
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-topbar {
+    margin-top: max(10px, env(safe-area-inset-top));
+  }
+
+  .dashboard-content:has(.dashboard-pod),
+  .dashboard-content:has(.kairos-view) {
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+
+  .pod-chat-input-row {
+    gap: 8px;
+  }
+
+  .pod-chat-input {
+    min-width: 0;
+    font-size: 16px;
+  }
+
+  .pod-chat-send-btn {
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  .focus-duration-option {
+    min-height: 44px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .dashboard-shell :is(.dashboard-nav-link, .dashboard-topbar-menu, .dashboard-topbar-settings):hover {
+    transform: none;
+  }
+}

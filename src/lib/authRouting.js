@@ -1,8 +1,8 @@
 import { supabase, isSupabaseConfigured } from './supabase.js';
-import { FOCUS_STATUS_KEY } from './focusData.js';
+import { ACTIVE_SESSION_KEY, FOCUS_STATUS_KEY } from './focusData.js';
 import { ensureUserProfile, isOnboardingComplete } from './profiles.js';
 
-const LOCAL_SESSION_KEYS = [FOCUS_STATUS_KEY];
+const LOCAL_SESSION_KEYS = [FOCUS_STATUS_KEY, ACTIVE_SESSION_KEY];
 
 /**
  * Returns true when the user has completed /connect onboarding.

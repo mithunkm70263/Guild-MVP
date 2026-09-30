@@ -9,8 +9,46 @@ const APPLICATION_KEYS = {
 
 export const SESSIONS_KEY = 'guild-focus-sessions';
 export const FOCUS_STATUS_KEY = 'guild-focus-status';
+export const ACTIVE_SESSION_KEY = 'guild-focus-active';
+const DURATION_PREF_KEY = 'guild-focus-duration-minutes';
 
+export const DURATION_OPTIONS = [
+  { minutes: 30, label: '30 min', shortLabel: '30' },
+  { minutes: 60, label: '60 min', shortLabel: '60' },
+  { minutes: 90, label: '90 min', shortLabel: '90' },
+];
+
+const DEFAULT_DURATION_MINUTES = 90;
+const COMPLETION_RATIO = 0.8;
+
+export function getSessionDurationMinutes() {
+  try {
+    const stored = localStorage.getItem(DURATION_PREF_KEY);
+    if (stored) {
+      const parsed = Number(stored);
+      if (DURATION_OPTIONS.some((opt) => opt.minutes === parsed)) return parsed;
+    }
+  } catch { /* ignore */ }
+  return DEFAULT_DURATION_MINUTES;
+}
+
+export function setSessionDurationMinutes(minutes) {
+  try {
+    localStorage.setItem(DURATION_PREF_KEY, String(minutes));
+  } catch { /* ignore */ }
+}
+
+export function getSessionDurationMs() {
+  return getSessionDurationMinutes() * 60 * 1000;
+}
+
+export function getCompletionThresholdMs() {
+  return Math.floor(getSessionDurationMs() * COMPLETION_RATIO);
+}
+
+/** @deprecated — use getSessionDurationMs() instead */
 export const SESSION_DURATION_MS = 90 * 60 * 1000;
+/** @deprecated — use getCompletionThresholdMs() instead */
 export const COMPLETION_THRESHOLD_MS = 72 * 60 * 1000;
 
 const DEFAULT_WEEKLY_HOURS = 5;
@@ -91,7 +129,7 @@ function saveSessions(sessions) {
 }
 
 export function isSessionCompleted(elapsedMs) {
-  return elapsedMs >= COMPLETION_THRESHOLD_MS;
+  return elapsedMs >= getCompletionThresholdMs();
 }
 
 export function createSessionId() {
@@ -126,6 +164,37 @@ export function getFocusStatus() {
     return localStorage.getItem(FOCUS_STATUS_KEY);
   } catch {
     return null;
+  }
+}
+
+export function getActiveSession() {
+  const stored = readStorage(ACTIVE_SESSION_KEY, null);
+  if (!stored || typeof stored !== 'object') return null;
+  if (typeof stored.sessionStartTime !== 'number' || !Number.isFinite(stored.sessionStartTime)) return null;
+  if (typeof stored.focusText !== 'string') return null;
+
+  return {
+    focusText: stored.focusText,
+    sessionStartTime: stored.sessionStartTime,
+    totalPausedMs: Number(stored.totalPausedMs) || 0,
+    isPaused: Boolean(stored.isPaused),
+    pauseStartTime: typeof stored.pauseStartTime === 'number' ? stored.pauseStartTime : null,
+    pauseUsed: Boolean(stored.pauseUsed),
+    ended: Boolean(stored.ended),
+    elapsedMs: Number(stored.elapsedMs) || 0,
+    endedAt: typeof stored.endedAt === 'number' ? stored.endedAt : null,
+  };
+}
+
+export function saveActiveSession(session) {
+  writeStorage(ACTIVE_SESSION_KEY, session);
+}
+
+export function clearActiveSession() {
+  try {
+    localStorage.removeItem(ACTIVE_SESSION_KEY);
+  } catch {
+    // Storage unavailable
   }
 }
 

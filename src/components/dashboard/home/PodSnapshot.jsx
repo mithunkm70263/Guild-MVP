@@ -1,17 +1,22 @@
 import { Link } from 'react-router-dom';
-import { getPodMembers } from '../../../lib/homeData.js';
+import { usePod } from '../PodProvider.jsx';
 import HomeCard from './HomeCard.jsx';
 
 export default function PodSnapshot() {
-  const members = getPodMembers();
+  const pod = usePod();
+  const members = pod.members ?? [];
+  const title = pod.source === 'live' ? pod.name : 'My Pod';
+  const subtitle = pod.source === 'live'
+    ? `${pod.status === 'closed' ? 'Full pod' : 'Open pod'} · ${pod.pool}`
+    : 'Builder room snapshot';
 
   return (
     <HomeCard className="home-pod-card">
       <header className="home-card-head">
         <div className="home-card-head-row">
           <div>
-            <h2 className="home-card-title">My Pod</h2>
-            <p className="home-card-subtitle">Builder room snapshot</p>
+            <h2 className="home-card-title">{title}</h2>
+            <p className="home-card-subtitle">{subtitle}</p>
           </div>
           <Link to="/dashboard/pod" className="home-link-btn">Go to My Pod</Link>
         </div>

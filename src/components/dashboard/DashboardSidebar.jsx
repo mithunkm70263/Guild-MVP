@@ -80,7 +80,7 @@ const NAV_ITEMS = [
   },
 ];
 
-export default function DashboardSidebar({ collapsed, onToggle, onNavigate }) {
+export default function DashboardSidebar({ collapsed, mobileOpen, onToggle, onNavigate }) {
   const reduceMotion = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
 
@@ -95,11 +95,14 @@ export default function DashboardSidebar({ collapsed, onToggle, onNavigate }) {
   return (
     <motion.aside
       className={`dashboard-sidebar${collapsed ? ' is-collapsed' : ''}`}
+      id="dashboard-navigation"
       aria-label="Dashboard navigation"
+      aria-hidden={isMobile && !mobileOpen}
+      inert={isMobile && !mobileOpen}
       initial={reduceMotion || isMobile ? false : { opacity: 0, x: -16 }}
       animate={
         isMobile
-          ? { opacity: 1 }
+          ? { opacity: 1, x: mobileOpen ? 0 : '-110%' }
           : {
               opacity: 1,
               x: 0,
@@ -117,12 +120,17 @@ export default function DashboardSidebar({ collapsed, onToggle, onNavigate }) {
           <button
             type="button"
             className="dashboard-sidebar-toggle"
-            onClick={onToggle}
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            aria-expanded={!collapsed}
+            onClick={isMobile ? onNavigate : onToggle}
+            aria-label={isMobile ? 'Close navigation' : collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-expanded={isMobile ? mobileOpen : !collapsed}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-              {collapsed ? (
+              {isMobile ? (
+                <>
+                  <path d="m6 6 12 12" />
+                  <path d="M18 6 6 18" />
+                </>
+              ) : collapsed ? (
                 <path d="m9 18 6-6-6-6" />
               ) : (
                 <path d="m15 18-6-6 6-6" />

@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion';
-import { getPodMembers } from '../../../lib/homeData.js';
+import { usePod } from '../PodProvider.jsx';
 
 function MemberChip({ member, index, reduceMotion }) {
   return (
@@ -24,12 +24,13 @@ function MemberChip({ member, index, reduceMotion }) {
 
 export default function PodChatHeader() {
   const reduceMotion = useReducedMotion();
-  const members = getPodMembers();
+  const pod = usePod();
+  const members = pod.members ?? [];
 
   return (
     <header className="pod-chat-header">
       <div className="pod-chat-header-main">
-        <h1 className="pod-chat-title">My Pod</h1>
+        <h1 className="pod-chat-title">{pod.source === 'live' ? pod.name : 'My Pod'}</h1>
         <div className="pod-chat-online-badge">
           <span className="pod-chat-online-pulse" aria-hidden="true" />
           <span>Online</span>

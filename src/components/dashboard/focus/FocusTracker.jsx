@@ -10,7 +10,7 @@ import HomeCard from '../home/HomeCard.jsx';
 
 const WEEKDAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-function WeeklyProgress({ progress }) {
+function WeeklyProgress({ progress, reduceMotion }) {
   const percent = progress.target > 0
     ? Math.min(100, Math.round((progress.completed / progress.target) * 100))
     : 0;
@@ -26,9 +26,9 @@ function WeeklyProgress({ progress }) {
       <div className="focus-tracker-bar" aria-hidden="true">
         <motion.div
           className="focus-tracker-bar-fill"
-          initial={{ scaleX: 0 }}
+          initial={reduceMotion ? false : { scaleX: 0 }}
           animate={{ scaleX: percent / 100 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: reduceMotion ? 0 : 0.6, ease: [0.16, 1, 0.3, 1] }}
         />
       </div>
       <p className="focus-tracker-weekly-copy">
@@ -40,7 +40,7 @@ function WeeklyProgress({ progress }) {
   );
 }
 
-function MonthHeatmap({ heatmap }) {
+function MonthHeatmap({ heatmap, reduceMotion }) {
   const { days, leadingEmpty, monthLabel } = heatmap;
   const cells = useMemo(() => {
     const blanks = Array.from({ length: leadingEmpty }, (_, i) => ({ type: 'blank', key: `blank-${i}` }));
@@ -73,9 +73,9 @@ function MonthHeatmap({ heatmap }) {
               key={cell.key}
               className={`focus-heatmap-cell focus-heatmap-cell--level-${level}`}
               title={cell.hasSession ? `${cell.count} session${cell.count > 1 ? 's' : ''} on day ${cell.day}` : `No sessions on day ${cell.day}`}
-              initial={{ opacity: 0, scale: 0.6 }}
+              initial={reduceMotion ? false : { opacity: 0, scale: 0.6 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.25, delay: cell.day * 0.01 }}
+              transition={{ duration: reduceMotion ? 0 : 0.25, delay: reduceMotion ? 0 : cell.day * 0.01 }}
             />
           );
         })}
@@ -122,7 +122,7 @@ export default function FocusTracker() {
 
       <div className="focus-tracker-grid-layout">
         <HomeCard className="focus-tracker-card" hoverable={false}>
-          <WeeklyProgress progress={weeklyProgress} />
+          <WeeklyProgress progress={weeklyProgress} reduceMotion={reduceMotion} />
         </HomeCard>
 
         <HomeCard className="focus-tracker-card" hoverable={false}>
@@ -130,7 +130,7 @@ export default function FocusTracker() {
         </HomeCard>
 
         <HomeCard className="focus-tracker-card focus-tracker-card--wide" hoverable={false}>
-          <MonthHeatmap heatmap={heatmap} />
+          <MonthHeatmap heatmap={heatmap} reduceMotion={reduceMotion} />
         </HomeCard>
       </div>
     </motion.section>
